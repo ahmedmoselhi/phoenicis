@@ -109,7 +109,7 @@ jobs:
         uses: aochmann/actions-download-artifact@1.0.4
         with:
           name: Ubuntu
-      - uses: "marvinpinto/action-automatic-releases@latest"
+      - uses: "diillson/auto-release@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
