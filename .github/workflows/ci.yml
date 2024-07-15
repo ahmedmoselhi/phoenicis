@@ -1,5 +1,6 @@
 name: CI
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches:
@@ -99,3 +100,21 @@ jobs:
       #    name: Mac OS
       #    path: phoenicis-dist/target/packages/*.app
       #    if-no-files-found: error
+  build-release:
+    needs: [ubuntu-java-20]
+    name: "Build Release"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Download all workflow run artifacts
+        id: download-artifact
+        uses: aochmann/actions-download-artifact@1.0.4
+        with:
+          name: Ubuntu
+      - uses: "diillson/auto-release@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          automatic_release_tag: "latest"
+          title: "phoenicis"
+          files: |
+            Phoenicis_5.0-SNAPSHOT.deb
