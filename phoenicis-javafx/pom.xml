@@ -27,7 +27,7 @@
     <properties>
         <project.root>${project.basedir}/../</project.root>
         <openjfx.version>19.0.2.1</openjfx.version>
-        <testfx.version>4.0.15-alpha</testfx.version>
+        <testfx.version>4.0.18</testfx.version>
     </properties>
     <dependencies>
         <dependency>
@@ -209,7 +209,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.3.0</version>
                 <configuration>
                     <mainClass>org.phoenicis.javafx.JavaFXApplication</mainClass>
                 </configuration>
@@ -217,7 +217,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.4.2</version>
                 <configuration>
                     <archive>
                         <manifest>
