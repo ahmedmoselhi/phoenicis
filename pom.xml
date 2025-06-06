@@ -50,9 +50,9 @@
         <org.bouncycastle.version>1.46</org.bouncycastle.version>
         <slf4j.version>2.0.16</slf4j.version>
         <surefire.version>3.5.1</surefire.version>
-        <logback.version>1.5.12</logback.version>
+        <logback.version>1.5.16</logback.version>
         <junit.version>4.13.2</junit.version>
-        <mockito.version>5.14.2</mockito.version>
+        <mockito.version>5.15.2</mockito.version>
         <spring.version>5.3.23</spring.version>
         <formatter-maven-plugin.version>2.23.0</formatter-maven-plugin.version>
         <graalvm.version>21.1.0</graalvm.version>
@@ -75,7 +75,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.18.1</version>
+                <version>2.18.2</version>
             </dependency>
             <dependency>
                 <groupId>com.googlecode.gettext-commons</groupId>
