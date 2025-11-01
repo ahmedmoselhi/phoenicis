@@ -71,8 +71,9 @@ public class RepositoryConfiguration {
                 backgroundRepositoryFactory());
 
         // set initial repositories
+        // MODERNIZATION: Using the lambda-based toArray() for cleaner code since Java 11+
         repositoryManager.addRepositories(
-                this.repositoryLocationLoader().loadRepositoryLocations().toArray(new RepositoryLocation[0]));
+                this.repositoryLocationLoader().loadRepositoryLocations().toArray(RepositoryLocation[]::new));
 
         return repositoryManager;
     }

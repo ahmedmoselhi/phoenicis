@@ -29,7 +29,7 @@ public class FilesystemJsonRepositoryLocationLoader implements RepositoryLocatio
     private final ObjectMapper objectMapper;
 
     public FilesystemJsonRepositoryLocationLoader(String repositoryListPath, String defaultGitUrl,
-            String defaultGitBranch, String defaultClasspath, ObjectMapper objectMapper) {
+                                                  String defaultGitBranch, String defaultClasspath, ObjectMapper objectMapper) {
         this.repositoryListPath = repositoryListPath;
         this.defaultGitUrl = defaultGitUrl;
         this.defaultGitBranch = defaultGitBranch;

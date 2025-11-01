@@ -33,13 +33,17 @@ public class UiQuestionFactoryCLI implements UiQuestionFactory {
     @Override
     public void create(String questionText, Runnable yesCallback, Runnable noCallback) {
         String answer = "";
+        
+        // FIX: Create the Scanner *before* the loop.
+        // NOTE: A Scanner on System.in should generally not be closed,
+        // as closing it closes System.in for the entire application.
+        final Scanner input = new Scanner(System.in); 
 
         while (!"yes".equals(answer) && !"no".equals(answer)) {
             System.out.println(questionText);
             System.out.print("Please enter: [yes, no] ");
 
-            Scanner input = new Scanner(System.in);
-            answer = input.nextLine();
+            answer = input.nextLine().toLowerCase().trim(); // Convert to lowercase and trim for better input handling
 
             switch (answer) {
                 case "yes":
@@ -48,6 +52,7 @@ public class UiQuestionFactoryCLI implements UiQuestionFactory {
                 case "no":
                     noCallback.run();
                     break;
+                // No 'default' case is needed since the 'while' loop handles invalid input.
             }
         }
     }

@@ -39,8 +39,8 @@ public class DefaultRepositoryManager implements RepositoryManager {
     private boolean isRepositoryLoaded = false;
 
     public DefaultRepositoryManager(ExecutorService executorService, String cacheDirectoryPath,
-            LocalRepository.Factory localRepositoryFactory, ClasspathRepository.Factory classPathRepositoryFactory,
-            BackgroundRepository.Factory backgroundRepositoryFactory) {
+                                    LocalRepository.Factory localRepositoryFactory, ClasspathRepository.Factory classPathRepositoryFactory,
+                                    BackgroundRepository.Factory backgroundRepositoryFactory) {
         super();
 
         this.localRepositoryFactory = localRepositoryFactory;
@@ -87,7 +87,8 @@ public class DefaultRepositoryManager implements RepositoryManager {
 
     @Override
     public void moveRepository(RepositoryLocation<? extends Repository> repositoryUrl, int toIndex) {
-        LOGGER.info(String.format("Move repository: %s to %d", repositoryUrl, toIndex));
+        // MODERNIZATION: Use parameterized logging
+        LOGGER.info("Move repository: {} to {}", repositoryUrl, toIndex);
 
         this.multipleRepository.moveRepository(this.repositoryMap.get(repositoryUrl), toIndex);
 
@@ -97,7 +98,8 @@ public class DefaultRepositoryManager implements RepositoryManager {
     @Override
     public synchronized void updateRepositories(
             final List<RepositoryLocation<? extends Repository>> repositoryLocations) {
-        LOGGER.info(String.format("Updating repositories list to %s", repositoryLocations.toString()));
+        // MODERNIZATION: Use parameterized logging
+        LOGGER.info("Updating repositories list to {}", repositoryLocations);
 
         final Map<RepositoryLocation<? extends Repository>, Repository> copy = new HashMap<>(this.repositoryMap);
 
@@ -130,7 +132,8 @@ public class DefaultRepositoryManager implements RepositoryManager {
 
     @Override
     public synchronized void addRepositories(int index, RepositoryLocation<? extends Repository>... repositoryUrls) {
-        LOGGER.info(String.format("Adding repositories: %s at index %d", Arrays.toString(repositoryUrls), index));
+        // MODERNIZATION: Use parameterized logging
+        LOGGER.info("Adding repositories: {} at index {}", Arrays.toString(repositoryUrls), index);
 
         for (int repositoryUrlIndex = 0; repositoryUrlIndex < repositoryUrls.length; repositoryUrlIndex++) {
             Repository repository = repositoryUrls[repositoryUrlIndex].createRepository(
@@ -151,7 +154,8 @@ public class DefaultRepositoryManager implements RepositoryManager {
 
     @Override
     public synchronized void removeRepositories(RepositoryLocation<? extends Repository>... repositoryUrls) {
-        LOGGER.info(String.format("Removing repositories: %s", Arrays.toString(repositoryUrls)));
+        // MODERNIZATION: Use parameterized logging
+        LOGGER.info("Removing repositories: {}", Arrays.toString(repositoryUrls));
 
         for (RepositoryLocation<? extends Repository> repositoryLocation : repositoryUrls) {
             Repository deletedRepository = this.repositoryMap.remove(repositoryLocation);

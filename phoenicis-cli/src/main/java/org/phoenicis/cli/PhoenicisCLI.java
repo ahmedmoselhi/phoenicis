@@ -33,7 +33,12 @@ public class PhoenicisCLI {
         try {
             final CLIController arguments = CommandLineParser.parse(CLIController.class, args, OptionStyle.SIMPLE);
 
-            arguments.close();
+            try {
+                arguments.close();
+            } catch (Exception e) {
+                // Catch the checked exception that close() can throw (Exception from AutoCloseable)
+                throw new RuntimeException("Failed to close CLIController arguments.", e);
+            }
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException | InterruptedException e) {
             throw new RuntimeException(e);
         }

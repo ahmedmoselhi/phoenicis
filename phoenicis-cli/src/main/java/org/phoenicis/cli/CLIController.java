@@ -124,7 +124,7 @@ public class CLIController implements AutoCloseable {
     }
 
     @Override
-    public void close() throws InterruptedException {
+    public void close() throws Exception {
         applicationContext.getBean(ControlledThreadPoolExecutorServiceCloser.class).close();
         applicationContext.close();
     }
