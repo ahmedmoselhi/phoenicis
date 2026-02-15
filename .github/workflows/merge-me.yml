@@ -7,6 +7,10 @@ on:
     workflows:
       - 'CI'
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   merge-me:
     name: Merge me!
@@ -16,5 +20,5 @@ jobs:
         name: Merge me!
         uses: ridedott/merge-me-action@v2
         with:
-          GITHUB_TOKEN: ${{ secrets.DEPENDABOT_AUTO_MERGE || github.token }}
+          GITHUB_TOKEN: ${{ secrets.DEPENDABOT_AUTO_MERGE || secrets.GITHUB_TOKEN }}
           ENABLE_GITHUB_API_PREVIEW: true
