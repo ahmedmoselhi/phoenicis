@@ -46,7 +46,7 @@ fi
 
 if compgen -G "$APP_HOME/lib/app/phoenicis-javafx-*.jar" > /dev/null || compgen -G "$APP_HOME/lib/phoenicis-javafx-*.jar" > /dev/null; then
     exec "$JAVA_BIN" \
-        --add-modules=jdk.crypto.ec,java.base,javafx.base,javafx.web,javafx.media,javafx.graphics,javafx.controls,java.naming,java.sql,java.scripting,jdk.internal.vm.ci,org.graalvm.truffle,java.management \
+        --add-modules=javafx.base,javafx.web,javafx.media,javafx.graphics,javafx.controls \
         --enable-native-access=javafx.graphics \
         --module-path "$MODULE_PATH" \
         --upgrade-module-path="$APP_HOME/lib/compiler.jar:$APP_HOME/lib/app/compiler.jar" \
