@@ -4,35 +4,40 @@ set -e
 
 APP_HOME="/usr/share/phoenicis"
 
-JAVA_BIN="$APP_HOME/lib/runtime/bin/java"
-if [ ! -x "$JAVA_BIN" ]; then
-    JAVA_BIN="java"
+for launcher in \
+    "$APP_HOME/phoenicis-playonlinux" \
+    "$APP_HOME/bin/phoenicis-playonlinux" \
+    "$APP_HOME/bin/Phoenicis PlayOnLinux" \
+    "$APP_HOME/PhoenicisPlayOnLinux"; do
+    if [ -x "$launcher" ]; then
+        exec "$launcher" "$@"
+    fi
+done
+
+for candidate in \
+    "$APP_HOME/lib/runtime/bin/java" \
+    "$APP_HOME/runtime/bin/java"; do
+    if [ -x "$candidate" ]; then
+        JAVA_BIN="$candidate"
+        break
+    fi
+done
+
+JAVA_BIN="${JAVA_BIN:-java}"
+
+MODULE_PATH="$APP_HOME/lib"
+if [ -d "$APP_HOME/lib/app" ]; then
+    MODULE_PATH="$MODULE_PATH:$APP_HOME/lib/app"
 fi
 
 if compgen -G "$APP_HOME/lib/app/*.jar" > /dev/null || compgen -G "$APP_HOME/lib/*.jar" > /dev/null; then
     exec "$JAVA_BIN" \
         --add-modules=jdk.crypto.ec,java.base,javafx.base,javafx.web,javafx.media,javafx.graphics,javafx.controls,java.naming,java.sql,java.scripting,jdk.internal.vm.ci,org.graalvm.truffle,java.management \
         --enable-native-access=javafx.graphics \
-        --module-path "$APP_HOME/lib" \
+        --module-path "$MODULE_PATH" \
         --upgrade-module-path="$APP_HOME/lib/compiler.jar:$APP_HOME/lib/app/compiler.jar" \
         -cp "$APP_HOME/lib/app/*:$APP_HOME/lib/*" \
         org.phoenicis.javafx.JavaFXApplication "$@"
-fi
-
-if [ -x "$APP_HOME/phoenicis-playonlinux" ]; then
-    exec "$APP_HOME/phoenicis-playonlinux" "$@"
-fi
-
-if [ -x "$APP_HOME/bin/phoenicis-playonlinux" ]; then
-    exec "$APP_HOME/bin/phoenicis-playonlinux" "$@"
-fi
-
-if [ -x "$APP_HOME/bin/Phoenicis PlayOnLinux" ]; then
-    exec "$APP_HOME/bin/Phoenicis PlayOnLinux" "$@"
-fi
-
-if [ -x "$APP_HOME/PhoenicisPlayOnLinux" ]; then
-    exec "$APP_HOME/PhoenicisPlayOnLinux" "$@"
 fi
 
 echo "Unable to find a runnable Phoenicis launcher in $APP_HOME" >&2
