@@ -1,3 +1,14 @@
 #!/bin/bash
 
-/usr/share/phoenicis/PhoenicisPlayOnLinux "$@"
+set -e
+
+if [ -x "/usr/share/phoenicis/bin/Phoenicis PlayOnLinux" ]; then
+    exec "/usr/share/phoenicis/bin/Phoenicis PlayOnLinux" "$@"
+fi
+
+if [ -x "/usr/share/phoenicis/PhoenicisPlayOnLinux" ]; then
+    exec "/usr/share/phoenicis/PhoenicisPlayOnLinux" "$@"
+fi
+
+echo "Unable to find Phoenicis executable in /usr/share/phoenicis" >&2
+exit 1
