@@ -24,10 +24,13 @@ import org.phoenicis.repository.dto.CategoryDTO;
 import org.phoenicis.repository.dto.RepositoryDTO;
 import org.phoenicis.scripts.engine.PhoenicisScriptEngineFactory;
 import org.phoenicis.scripts.engine.implementation.PhoenicisScriptEngine;
+import org.phoenicis.scripts.exceptions.ScriptNotFoundException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -70,18 +73,53 @@ public class EngineSettingsManager {
             final Map<String, List<EngineSetting>> result = configurations.stream()
                     .collect(Collectors.groupingBy(
                             configuration -> configuration.engineId,
-                            Collectors.mapping(configuration -> {
-                                final String include = String.format("include(\"engines.%s.settings.%s\");",
-                                        configuration.engineId, configuration.settingId);
-
-                                final Value settingClass = (Value) phoenicisScriptEngine.evalAndReturn(include,
-                                        errorCallback);
-
-                                return settingClass.newInstance().as(EngineSetting.class);
-                            }, Collectors.toList())));
+                            Collectors.flatMapping(
+                                    configuration -> fetchSetting(phoenicisScriptEngine, configuration,
+                                            errorCallback).stream(),
+                                    Collectors.toList())));
 
             callback.accept(result);
         });
+    }
+
+    private Optional<EngineSetting> fetchSetting(PhoenicisScriptEngine phoenicisScriptEngine,
+            SettingConfig configuration, Consumer<Exception> errorCallback) {
+        final String include = String.format("include(\"engines.%s.settings.%s\");",
+                configuration.engineId, configuration.settingId);
+
+        final AtomicReference<Exception> fetchException = new AtomicReference<>();
+
+        final Object value = phoenicisScriptEngine.evalAndReturn(include, fetchException::set);
+
+        if (fetchException.get() != null) {
+            if (!isMissingSettingInclude(fetchException.get())) {
+                errorCallback.accept(fetchException.get());
+            }
+
+            return Optional.empty();
+        }
+
+        if (!(value instanceof Value)) {
+            return Optional.empty();
+        }
+
+        final Value settingClass = (Value) value;
+
+        return Optional.of(settingClass.newInstance().as(EngineSetting.class));
+    }
+
+    private boolean isMissingSettingInclude(Throwable throwable) {
+        Throwable current = throwable;
+
+        while (current != null) {
+            if (current instanceof ScriptNotFoundException) {
+                return true;
+            }
+
+            current = current.getCause();
+        }
+
+        return false;
     }
 
     /**
