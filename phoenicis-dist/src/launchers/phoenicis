@@ -31,13 +31,20 @@ if [ -d "$APP_HOME/lib/app" ]; then
 fi
 
 if compgen -G "$APP_HOME/lib/app/*.jar" > /dev/null || compgen -G "$APP_HOME/lib/*.jar" > /dev/null; then
-    exec "$JAVA_BIN" \
-        --add-modules=jdk.crypto.ec,java.base,javafx.base,javafx.web,javafx.media,javafx.graphics,javafx.controls,java.naming,java.sql,java.scripting,jdk.internal.vm.ci,org.graalvm.truffle,java.management \
-        --enable-native-access=javafx.graphics \
-        --module-path "$MODULE_PATH" \
-        --upgrade-module-path="$APP_HOME/lib/compiler.jar:$APP_HOME/lib/app/compiler.jar" \
-        -cp "$APP_HOME/lib/app/*:$APP_HOME/lib/*" \
-        org.phoenicis.javafx.JavaFXApplication "$@"
+    MODULES="jdk.crypto.ec,java.base,javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.web,java.management,java.naming,java.scripting,java.sql,jdk.internal.vm.ci,jdk.internal.vm.compiler,jdk.jsobject,jdk.xml.dom,org.graalvm.truffle"
+    JAVA_ARGS=(
+        "--add-modules=$MODULES"
+        "--module-path" "$MODULE_PATH"
+        "--upgrade-module-path=$APP_HOME/lib/compiler.jar:$APP_HOME/lib/app/compiler.jar"
+        "-cp" "$APP_HOME/lib/app/*:$APP_HOME/lib/*"
+        "org.phoenicis.javafx.JavaFXApplication"
+    )
+
+    if "$JAVA_BIN" --help 2>&1 | grep -q -- "--enable-native-access"; then
+        JAVA_ARGS=("--enable-native-access=javafx.graphics" "${JAVA_ARGS[@]}")
+    fi
+
+    exec "$JAVA_BIN" "${JAVA_ARGS[@]}" "$@"
 fi
 
 echo "Unable to find a runnable Phoenicis launcher in $APP_HOME" >&2
