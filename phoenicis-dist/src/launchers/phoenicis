@@ -2,13 +2,38 @@
 
 set -e
 
-if [ -x "/usr/share/phoenicis/bin/Phoenicis PlayOnLinux" ]; then
-    exec "/usr/share/phoenicis/bin/Phoenicis PlayOnLinux" "$@"
+APP_HOME="/usr/share/phoenicis"
+
+if [ -x "$APP_HOME/phoenicis-playonlinux" ]; then
+    exec "$APP_HOME/phoenicis-playonlinux" "$@"
 fi
 
-if [ -x "/usr/share/phoenicis/PhoenicisPlayOnLinux" ]; then
-    exec "/usr/share/phoenicis/PhoenicisPlayOnLinux" "$@"
+if [ -x "$APP_HOME/bin/phoenicis-playonlinux" ]; then
+    exec "$APP_HOME/bin/phoenicis-playonlinux" "$@"
 fi
 
-echo "Unable to find Phoenicis executable in /usr/share/phoenicis" >&2
+if [ -x "$APP_HOME/bin/Phoenicis PlayOnLinux" ]; then
+    exec "$APP_HOME/bin/Phoenicis PlayOnLinux" "$@"
+fi
+
+if [ -x "$APP_HOME/PhoenicisPlayOnLinux" ]; then
+    exec "$APP_HOME/PhoenicisPlayOnLinux" "$@"
+fi
+
+
+JAVA_BIN="$APP_HOME/lib/runtime/bin/java"
+if [ ! -x "$JAVA_BIN" ]; then
+    JAVA_BIN="java"
+fi
+
+if compgen -G "$APP_HOME/lib/app/*.jar" > /dev/null || compgen -G "$APP_HOME/lib/*.jar" > /dev/null; then
+    exec "$JAVA_BIN" \
+        --add-modules=jdk.crypto.ec,java.base,javafx.base,javafx.web,javafx.media,javafx.graphics,javafx.controls,java.naming,java.sql,java.scripting,jdk.internal.vm.ci,org.graalvm.truffle,java.management \
+        --module-path "$APP_HOME/lib" \
+        --upgrade-module-path="$APP_HOME/lib/compiler.jar:$APP_HOME/lib/app/compiler.jar" \
+        -cp "$APP_HOME/lib/app/*:$APP_HOME/lib/*" \
+        org.phoenicis.javafx.JavaFXApplication "$@"
+fi
+
+echo "Unable to find a runnable Phoenicis launcher in $APP_HOME" >&2
 exit 1
