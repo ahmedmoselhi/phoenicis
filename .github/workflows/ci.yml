@@ -19,6 +19,8 @@ jobs:
           cache: 'maven'
       - name: Install dependencies
         run: sudo npm install -g less
+      - name: Install Gettext
+        run: sudo apt-get update && sudo apt-get install -y gettext
       - name: Build with Maven
         run: mvn clean package
       - name: Create package
@@ -43,6 +45,8 @@ jobs:
           cache: 'maven'
       - name: Install dependencies
         run: sudo npm install -g less
+      - name: Install Gettext
+        run: sudo apt-get update && sudo apt-get install -y gettext
       - name: Build with Maven
         run: mvn clean package -DskipTests # no need to run tests again
       - name: Install Flatpak dependencies
@@ -73,6 +77,8 @@ jobs:
           cache: 'maven'
       - name: Install dependencies
         run: sudo npm install -g less
+      - name: Install Gettext
+        run: brew install gettext
       - name: Build with Maven
         run: mvn clean package
       - name: Create package

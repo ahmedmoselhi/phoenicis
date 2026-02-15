@@ -90,6 +90,11 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>graalvm-releases</id>
+            <name>GraalVM Releases Repository</name>
+            <url>https://repo.graalvm.org/artifactory/graalvm-releases</url>
+        </repository>
     </repositories>
     <build>
         <pluginManagement>
