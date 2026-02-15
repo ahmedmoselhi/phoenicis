@@ -75,7 +75,7 @@
         </dependency>
         <dependency>
             <groupId>org.graalvm.js</groupId>
-            <artifactId>js</artifactId>
+            <artifactId>js-language</artifactId>
             <version>${graalvm.version}</version>
             <scope>runtime</scope>
         </dependency>
