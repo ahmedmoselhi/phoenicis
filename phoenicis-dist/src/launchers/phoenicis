@@ -2,7 +2,17 @@
 
 set -e
 
-APP_HOME="/usr/share/phoenicis"
+APP_HOMES=("/usr/share/phoenicis" "/usr/lib/phoenicis")
+
+APP_HOME=""
+for candidate_home in "${APP_HOMES[@]}"; do
+    if [ -d "$candidate_home" ]; then
+        APP_HOME="$candidate_home"
+        break
+    fi
+done
+
+APP_HOME="${APP_HOME:-/usr/share/phoenicis}"
 
 for launcher in \
     "$APP_HOME/phoenicis-playonlinux" \
@@ -10,7 +20,11 @@ for launcher in \
     "$APP_HOME/bin/Phoenicis PlayOnLinux" \
     "$APP_HOME/PhoenicisPlayOnLinux"; do
     if [ -x "$launcher" ]; then
-        exec "$launcher" "$@"
+        if "$launcher" "$@"; then
+            exit 0
+        fi
+
+        echo "Bundled launcher failed ($launcher), trying Java fallback." >&2
     fi
 done
 
@@ -30,9 +44,9 @@ if [ -d "$APP_HOME/lib/app" ]; then
     MODULE_PATH="$MODULE_PATH:$APP_HOME/lib/app"
 fi
 
-if compgen -G "$APP_HOME/lib/app/*.jar" > /dev/null || compgen -G "$APP_HOME/lib/*.jar" > /dev/null; then
+if compgen -G "$APP_HOME/lib/app/phoenicis-javafx-*.jar" > /dev/null || compgen -G "$APP_HOME/lib/phoenicis-javafx-*.jar" > /dev/null; then
     exec "$JAVA_BIN" \
-        --add-modules=jdk.crypto.ec,java.base,javafx.base,javafx.web,javafx.media,javafx.graphics,javafx.controls,java.naming,java.sql,java.scripting,jdk.internal.vm.ci,org.graalvm.truffle,java.management \
+        --add-modules=javafx.base,javafx.web,javafx.media,javafx.graphics,javafx.controls \
         --enable-native-access=javafx.graphics \
         --module-path "$MODULE_PATH" \
         --upgrade-module-path="$APP_HOME/lib/compiler.jar:$APP_HOME/lib/app/compiler.jar" \
@@ -40,5 +54,5 @@ if compgen -G "$APP_HOME/lib/app/*.jar" > /dev/null || compgen -G "$APP_HOME/lib
         org.phoenicis.javafx.JavaFXApplication "$@"
 fi
 
-echo "Unable to find a runnable Phoenicis launcher in $APP_HOME" >&2
+echo "Unable to find a runnable Phoenicis launcher or JavaFX application jars in $APP_HOME" >&2
 exit 1
