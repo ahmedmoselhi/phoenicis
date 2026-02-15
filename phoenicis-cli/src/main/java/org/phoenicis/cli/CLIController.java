@@ -61,7 +61,7 @@ public class CLIController implements AutoCloseable {
         final ShortcutRunner shortcutRunner = applicationContext.getBean(ShortcutRunner.class);
 
         if (!shortcutRunner.shortcutExists(shortcutName)) {
-            LOGGER.error("Requested shortcut does not exist: " + shortcutName);
+            LOGGER.warn("Requested shortcut does not exist: {}", shortcutName);
             return;
         }
 
@@ -102,7 +102,7 @@ public class CLIController implements AutoCloseable {
                 .getScript(Arrays.asList(typeId, categoryId, appId, scriptId));
 
         if (scriptDTO == null) {
-            LOGGER.error("Requested app does not exist: " + arguments);
+            LOGGER.warn("Requested app does not exist: {}", arguments);
             return;
         }
 

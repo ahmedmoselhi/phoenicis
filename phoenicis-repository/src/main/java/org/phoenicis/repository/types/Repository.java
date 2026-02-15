@@ -72,7 +72,7 @@ public interface Repository {
                 .filter(type -> wantedId.equals(type.getId())).findFirst();
 
         if (!typeDTO.isPresent()) {
-            LOGGER.error(String.format("Could not find TypeDTO with ID \"%s\"", wantedId));
+            LOGGER.warn("Could not find TypeDTO with ID \"{}\"", wantedId);
         }
 
         return typeDTO.orElse(null);
@@ -94,7 +94,7 @@ public interface Repository {
                 .filter(category -> wantedId.equals(category.getId())).findFirst();
 
         if (!categoryDTO.isPresent()) {
-            LOGGER.error(String.format("Could not find CategoryDTO with ID \"%s\"", wantedId));
+            LOGGER.warn("Could not find CategoryDTO with ID \"{}\"", wantedId);
         }
 
         return categoryDTO.orElse(null);
@@ -117,7 +117,7 @@ public interface Repository {
                 .filter(application -> wantedId.equals(application.getId())).findFirst();
 
         if (!applicationDTO.isPresent()) {
-            LOGGER.error(String.format("Could not find ApplicationDTO with ID \"%s\"", wantedId));
+            LOGGER.warn("Could not find ApplicationDTO with ID \"{}\"", wantedId);
         }
 
         return applicationDTO.orElse(null);
@@ -141,7 +141,7 @@ public interface Repository {
             }
         }
 
-        LOGGER.error(String.format("Could not find ScriptDTO with ID \"%s\"", wantedId));
+        LOGGER.warn("Could not find ScriptDTO with ID \"{}\"", wantedId);
         return null;
     }
 
