@@ -27,6 +27,16 @@ jobs:
         run: |
           cd phoenicis-dist/src/scripts
           bash phoenicis-create-package.sh
+      - name: Create GitHub release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifactErrorsFailBuild: true
+          artifacts: phoenicis-dist/target/Phoenicis_5.0-SNAPSHOT.deb
+          tag: latest
+          allowUpdates: true
+          generateReleaseNotes: true
       - uses: actions/upload-artifact@v4
         with:
           name: Ubuntu
