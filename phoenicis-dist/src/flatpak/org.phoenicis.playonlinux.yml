@@ -6,7 +6,7 @@ sdk: org.freedesktop.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Compat.i386
   - org.freedesktop.Sdk.Extension.toolchain-i386
-  - org.freedesktop.Sdk.Extension.openjdk25
+  - org.freedesktop.Sdk.Extension.openjdk17
 add-extensions:
   # support 32-bit apps
   org.freedesktop.Platform.Compat.i386:
@@ -55,7 +55,7 @@ modules:
   - name: openjdk
     buildsystem: simple
     build-commands:
-      - /usr/lib/sdk/openjdk25/install.sh
+      - /usr/lib/sdk/openjdk17/install.sh
   - name: cabextract
     buildsystem: autotools
     sources:
