@@ -102,7 +102,6 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     needs:
       - ubuntu-java-25
-      - flatpak
       - macos-java-25
     runs-on: ubuntu-latest
     permissions:
