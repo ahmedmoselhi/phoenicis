@@ -100,6 +100,15 @@ EOF
     cp -a "$SCRIPT_PATH/../launchers/phoenicis" $packageName/usr/bin/phoenicis
     chmod +x $packageName/usr/bin/phoenicis
 
+    launcherCompatibilityDir="$packageName/usr/share/phoenicis/bin"
+    mkdir -p "$launcherCompatibilityDir"
+    cat << 'EOF_LAUNCHER' > "$launcherCompatibilityDir/Phoenicis PlayOnLinux"
+#!/bin/sh
+
+exec /usr/bin/phoenicis "$@"
+EOF_LAUNCHER
+    chmod +x "$launcherCompatibilityDir/Phoenicis PlayOnLinux"
+
     cp "$SCRIPT_PATH/../resources/Phoenicis.desktop" "$packageName/usr/share/applications"
     cp "$SCRIPT_PATH/../resources/phoenicis.png" "$packageName/usr/share/pixmaps"
     cp "$SCRIPT_PATH/../resources/phoenicis-16.png" "$packageName/usr/share/pixmaps"
