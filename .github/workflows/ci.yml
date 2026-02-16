@@ -79,7 +79,12 @@ jobs:
       - name: Install dependencies
         run: sudo npm install -g less
       - name: Install Gettext
-        run: brew install gettext
+        run: |
+          if brew list --versions gettext >/dev/null; then
+            echo "gettext is already installed"
+          else
+            brew install gettext
+          fi
       - name: Build with Maven
         run: mvn clean package
       - name: Create package
