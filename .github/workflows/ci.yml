@@ -4,6 +4,7 @@ on:
   push:
     branches:
     - master
+  workflow_dispatch:
 
 jobs:
   ubuntu-java-25:
@@ -27,16 +28,6 @@ jobs:
         run: |
           cd phoenicis-dist/src/scripts
           bash phoenicis-create-package.sh
-      - name: Create GitHub release
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: ncipollo/release-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          artifactErrorsFailBuild: true
-          artifacts: phoenicis-dist/target/Phoenicis_5.0-SNAPSHOT.deb
-          tag: latest
-          allowUpdates: true
-          generateReleaseNotes: true
       - uses: actions/upload-artifact@v4
         with:
           name: Ubuntu
@@ -100,3 +91,43 @@ jobs:
       #    name: Mac OS
       #    path: phoenicis-dist/target/packages/*.app
       #    if-no-files-found: error
+
+  release:
+    name: Release
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    needs:
+      - ubuntu-java-25
+      - flatpak
+      - macos-java-25
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download Ubuntu artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Ubuntu
+          path: release-artifacts
+      - name: Generate release tag
+        id: generate_tag
+        run: |
+          git fetch --tags
+          latest_number=$(git tag -l 'v5.0.0-alpha*' | sed -E 's/^v5\.0\.0-alpha//' | awk '/^[0-9]+$/ { print $1 }' | sort -n | tail -n 1)
+
+          if [ -z "$latest_number" ]; then
+            next_number="01"
+          else
+            next_number=$(printf "%02d" "$((10#$latest_number + 1))")
+          fi
+
+          echo "tag=v5.0.0-alpha${next_number}" >> "$GITHUB_OUTPUT"
+      - name: Create GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifactErrorsFailBuild: true
+          artifacts: release-artifacts/Phoenicis_5.0-SNAPSHOT.deb
+          tag: ${{ steps.generate_tag.outputs.tag }}
+          allowUpdates: false
+          generateReleaseNotes: true
