@@ -14,12 +14,22 @@ done
 
 APP_HOME="${APP_HOME:-/usr/share/phoenicis}"
 
+SELF_PATH="$(readlink -f "$0")"
+
 for launcher in \
     "$APP_HOME/phoenicis-playonlinux" \
     "$APP_HOME/bin/phoenicis-playonlinux" \
-    "$APP_HOME/bin/Phoenicis PlayOnLinux" \
     "$APP_HOME/PhoenicisPlayOnLinux"; do
     if [ -x "$launcher" ]; then
+        launcher_path="$(readlink -f "$launcher")"
+
+        # Some distro packages ship /usr/share/phoenicis/bin/Phoenicis PlayOnLinux
+        # as a compatibility wrapper which executes /usr/bin/phoenicis again.
+        # Running that wrapper from here causes a recursive fork loop.
+        if [ "$launcher_path" = "$SELF_PATH" ] || grep -q "exec /usr/bin/phoenicis" "$launcher" 2>/dev/null; then
+            continue
+        fi
+
         if "$launcher" "$@"; then
             exit 0
         fi
