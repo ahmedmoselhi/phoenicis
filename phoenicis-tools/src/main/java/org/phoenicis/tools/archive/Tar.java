@@ -154,22 +154,24 @@ public class Tar {
     private List<File> uncompress(final InputStream inputStream, CountingInputStream countingInputStream,
             final File outputDir, long finalSize, Consumer<ProgressEntity> stateCallback) {
         final List<File> uncompressedFiles = new LinkedList<>();
+        int extractedEntries = 0;
         try (ArchiveInputStream debInputStream = new ArchiveStreamFactory().createArchiveInputStream("tar",
                 inputStream)) {
             TarArchiveEntry entry;
             while ((entry = (TarArchiveEntry) debInputStream.getNextEntry()) != null) {
+                extractedEntries++;
                 final File outputFile = new File(outputDir, entry.getName());
                 if (entry.isDirectory()) {
-                    LOGGER.info(
+                    LOGGER.debug(
                             String.format("Attempting to write output directory %s.", outputFile.getAbsolutePath()));
 
                     if (!outputFile.exists()) {
-                        LOGGER.info(String.format("Attempting to createPrefix output directory %s.",
+                        LOGGER.debug(String.format("Attempting to createPrefix output directory %s.",
                                 outputFile.getAbsolutePath()));
                         Files.createDirectories(outputFile.toPath());
                     }
                 } else {
-                    LOGGER.info(String.format("Creating output file %s (%s).", outputFile.getAbsolutePath(),
+                    LOGGER.debug(String.format("Creating output file %s (%s).", outputFile.getAbsolutePath(),
                             entry.getMode()));
 
                     if (entry.isSymbolicLink()) {
@@ -187,6 +189,10 @@ public class Tar {
                 }
                 uncompressedFiles.add(outputFile);
 
+                if (extractedEntries % 500 == 0) {
+                    LOGGER.info(String.format("Extracted %d entries from archive...", extractedEntries));
+                }
+
                 stateCallback
                         .accept(new ProgressEntity.Builder()
                                 .withPercent(
@@ -194,6 +200,10 @@ public class Tar {
                                 .withProgressText("Extracting " + outputFile.getName()).build());
 
             }
+
+            LOGGER.info(String.format("Finished extracting %d entries to %s.", extractedEntries,
+                    outputDir.getAbsolutePath()));
+
             return uncompressedFiles;
         } catch (IOException | org.apache.commons.compress.archivers.ArchiveException e) {
             throw new ArchiveException("Unable to extract the file", e);
