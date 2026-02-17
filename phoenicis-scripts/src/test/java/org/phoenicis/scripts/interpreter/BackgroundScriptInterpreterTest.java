@@ -54,7 +54,8 @@ public class BackgroundScriptInterpreterTest {
         }
 
         @Override
-        public void runScript(String scriptContent, Runnable doneCallback, java.util.function.Consumer<Exception> errorCallback) {
+        public void runScript(String scriptContent, Runnable doneCallback,
+                java.util.function.Consumer<Exception> errorCallback) {
             throwAsUnchecked(throwable);
         }
 
@@ -73,7 +74,8 @@ public class BackgroundScriptInterpreterTest {
         }
 
         @Override
-        public void runScript(String scriptContent, Runnable doneCallback, java.util.function.Consumer<Exception> errorCallback) {
+        public void runScript(String scriptContent, Runnable doneCallback,
+                java.util.function.Consumer<Exception> errorCallback) {
         }
 
         @Override
