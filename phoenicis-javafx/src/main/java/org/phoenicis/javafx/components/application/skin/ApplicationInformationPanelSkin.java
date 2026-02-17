@@ -17,6 +17,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.web.WebView;
+
+import java.util.Optional;
 import org.graalvm.polyglot.Value;
 import org.phoenicis.javafx.collections.MappedList;
 import org.phoenicis.javafx.components.application.control.ApplicationInformationPanel;
@@ -268,17 +270,33 @@ public class ApplicationInformationPanelSkin
                 .eval(executeBuilder.toString(), result -> {
                     Value installer = (Value) result;
 
-                    installer.as(Installer.class).go();
-                }, e -> Platform.runLater(() -> {
-                    // no exception if installation is cancelled
-                    if (!(e.getCause() instanceof InterruptedException)) {
-                        final ErrorDialog errorDialog = ErrorDialog.builder()
-                                .withMessage(tr("The script ended unexpectedly"))
-                                .withException(e)
-                                .build();
-
-                        errorDialog.showAndWait();
+                    try {
+                        installer.as(Installer.class).go();
+                    } catch (Throwable e) {
+                        showScriptError(e);
                     }
-                }));
+                }, this::showScriptError);
+    }
+
+    private void showScriptError(Throwable e) {
+        Platform.runLater(() -> {
+            if (e != null && e.getCause() instanceof InterruptedException) {
+                return;
+            }
+
+            final String message = Optional.ofNullable(e)
+                    .map(Throwable::getMessage)
+                    .orElse("");
+            final String details = message.contains("Could not read any Wine branch")
+                    ? tr("The script could not fetch Wine branch metadata. Please install a Wine version manually from the Engines tab (Install from URL) and retry.")
+                    : tr("The script ended unexpectedly");
+
+            final ErrorDialog errorDialog = ErrorDialog.builder()
+                    .withMessage(details)
+                    .withException(e)
+                    .build();
+
+            errorDialog.showAndWait();
+        });
     }
 }
