@@ -17,7 +17,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.web.WebView;
-
 import org.graalvm.polyglot.Value;
 import org.phoenicis.javafx.collections.MappedList;
 import org.phoenicis.javafx.components.application.control.ApplicationInformationPanel;
@@ -269,26 +268,17 @@ public class ApplicationInformationPanelSkin
                 .eval(executeBuilder.toString(), result -> {
                     Value installer = (Value) result;
 
-                    try {
-                        installer.as(Installer.class).go();
-                    } catch (RuntimeException e) {
-                        showScriptError(e);
+                    installer.as(Installer.class).go();
+                }, e -> Platform.runLater(() -> {
+                    // no exception if installation is cancelled
+                    if (!(e.getCause() instanceof InterruptedException)) {
+                        final ErrorDialog errorDialog = ErrorDialog.builder()
+                                .withMessage(tr("The script ended unexpectedly"))
+                                .withException(e)
+                                .build();
+
+                        errorDialog.showAndWait();
                     }
-                }, this::showScriptError);
-    }
-
-    private void showScriptError(Throwable e) {
-        Platform.runLater(() -> {
-            if (e != null && e.getCause() instanceof InterruptedException) {
-                return;
-            }
-
-            final ErrorDialog errorDialog = ErrorDialog.builder()
-                    .withMessage(tr("The script ended unexpectedly"))
-                    .withException(e)
-                    .build();
-
-            errorDialog.showAndWait();
-        });
+                }));
     }
 }
