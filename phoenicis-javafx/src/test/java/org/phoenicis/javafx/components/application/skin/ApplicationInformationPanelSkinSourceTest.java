@@ -12,7 +12,8 @@ import static org.junit.Assert.assertFalse;
 public class ApplicationInformationPanelSkinSourceTest {
     @Test
     public void testWineHqSourceUrlIsNotReferenced() throws IOException {
-        final Path sourcePath = Path.of("src/main/java/org/phoenicis/javafx/components/application/skin/ApplicationInformationPanelSkin.java");
+        final Path sourcePath = Path.of(
+                "src/main/java/org/phoenicis/javafx/components/application/skin/ApplicationInformationPanelSkin.java");
         final String content = Files.readString(sourcePath, StandardCharsets.UTF_8);
 
         assertFalse(content.contains("https://dl.winehq.org/wine/source/"));

@@ -285,10 +285,12 @@ public class EnginesController {
         dialog.getDialogPane().setContent(grid);
 
         final Node installButton = dialog.getDialogPane().lookupButton(installButtonType);
-        installButton.disableProperty().bind(versionField.textProperty().isEmpty().or(urlField.textProperty().isEmpty()));
+        installButton.disableProperty()
+                .bind(versionField.textProperty().isEmpty().or(urlField.textProperty().isEmpty()));
 
-        dialog.showAndWait().filter(result -> result == installButtonType).ifPresent(ignored ->
-                installWineFromExternalUrl(engineDTO, versionField.getText().trim(), urlField.getText().trim()));
+        dialog.showAndWait().filter(result -> result == installButtonType)
+                .ifPresent(ignored -> installWineFromExternalUrl(engineDTO, versionField.getText().trim(),
+                        urlField.getText().trim()));
     }
 
     private void installWineFromExternalUrl(EngineDTO engineDTO, String version, String externalUrl) {
@@ -300,10 +302,12 @@ public class EnginesController {
                 .withYesCallback(() -> this.enginesManager.getEngine(engineDTO.getId(), engine -> {
                     try {
                         if (!"wine".equalsIgnoreCase(engineDTO.getId())) {
-                            throw new IllegalArgumentException(tr("Install from URL is only supported for Wine engines"));
+                            throw new IllegalArgumentException(
+                                    tr("Install from URL is only supported for Wine engines"));
                         }
 
-                        final Path targetDirectory = Path.of(engine.getLocalDirectory(engineDTO.getSubCategory(), version));
+                        final Path targetDirectory = Path
+                                .of(engine.getLocalDirectory(engineDTO.getSubCategory(), version));
                         Files.createDirectories(targetDirectory);
 
                         final String archiveExtension = getArchiveExtension(externalUrl);
