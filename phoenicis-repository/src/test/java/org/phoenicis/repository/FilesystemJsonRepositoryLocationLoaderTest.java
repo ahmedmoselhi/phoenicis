@@ -42,7 +42,8 @@ public class FilesystemJsonRepositoryLocationLoaderTest {
             final List<RepositoryLocation<? extends Repository>> loadedLocations = loader.loadRepositoryLocations();
             final GitRepositoryLocation migratedRepository = (GitRepositoryLocation) loadedLocations.get(0);
 
-            assertEquals("https://github.com/PhoenicisOrg/scripts", migratedRepository.getGitRepositoryUri().toString());
+            assertEquals("https://github.com/PhoenicisOrg/scripts",
+                    migratedRepository.getGitRepositoryUri().toString());
 
             final List<?> persistedLocations = objectMapper.readValue(temporaryFolder.getRoot().toPath()
                     .resolve("repositories.json").toFile(), List.class);
