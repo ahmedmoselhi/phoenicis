@@ -49,6 +49,13 @@ done
 
 JAVA_BIN="${JAVA_BIN:-java}"
 
+JVM_OPTS=()
+if "$JAVA_BIN" -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -version >/dev/null 2>&1; then
+    JVM_OPTS+=("-XX:+UnlockExperimentalVMOptions" "-XX:+EnableJVMCI")
+else
+    JVM_OPTS+=("-Dpolyglot.engine.WarnInterpreterOnly=false")
+fi
+
 LIB_DIR="$APP_HOME/lib"
 APP_DIR="$APP_HOME/app"
 
@@ -69,9 +76,9 @@ if [ -f "$APP_DIR/compiler.jar" ]; then
 fi
 
 if compgen -G "$APP_DIR/phoenicis-javafx-*.jar" > /dev/null || compgen -G "$LIB_DIR/phoenicis-javafx-*.jar" > /dev/null; then
-    exec "$JAVA_BIN" \
+    exec "$JAVA_BIN" "${JVM_OPTS[@]}" \
         --add-modules=javafx.base,javafx.web,javafx.media,javafx.graphics,javafx.controls \
-        --enable-native-access=javafx.graphics \
+        --enable-native-access=javafx.graphics,javafx.web \
         --module-path "$MODULE_PATH" \
         --upgrade-module-path="$COMPILER_UPGRADE_PATH" \
         -cp "$APP_DIR/*:$LIB_DIR/*" \
