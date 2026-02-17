@@ -18,7 +18,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.web.WebView;
 
-import java.util.Optional;
 import org.graalvm.polyglot.Value;
 import org.phoenicis.javafx.collections.MappedList;
 import org.phoenicis.javafx.components.application.control.ApplicationInformationPanel;
@@ -39,8 +38,6 @@ import static org.phoenicis.configuration.localisation.Localisation.tr;
  */
 public class ApplicationInformationPanelSkin
         extends SkinBase<ApplicationInformationPanel, ApplicationInformationPanelSkin> {
-    private static final String WINEHQ_SOURCE_URL = "https://dl.winehq.org/wine/source/";
-
     /**
      * The preferred height for the application miniature images
      */
@@ -265,7 +262,7 @@ public class ApplicationInformationPanelSkin
         executeBuilder.append(String.format("APPLICATION_ID=\"%s\";\n", script.getApplicationId()));
         executeBuilder.append(String.format("SCRIPT_ID=\"%s\";\n", script.getId()));
 
-        executeBuilder.append(disableWineSourceBranchFetch(script.getScript()));
+        executeBuilder.append(script.getScript());
         executeBuilder.append("\n");
 
         getControl().getScriptInterpreter().createInteractiveSession()
@@ -280,29 +277,14 @@ public class ApplicationInformationPanelSkin
                 }, this::showScriptError);
     }
 
-    private String disableWineSourceBranchFetch(String scriptContent) {
-        if (scriptContent == null) {
-            return "";
-        }
-
-        return scriptContent.replace(WINEHQ_SOURCE_URL, "");
-    }
-
     private void showScriptError(Throwable e) {
         Platform.runLater(() -> {
             if (e != null && e.getCause() instanceof InterruptedException) {
                 return;
             }
 
-            final String message = Optional.ofNullable(e)
-                    .map(Throwable::getMessage)
-                    .orElse("");
-            final String details = message.contains("Could not read any Wine branch")
-                    ? tr("The script could not fetch Wine branch metadata. Please install a Wine version manually from the Engines tab (Install from URL) and retry.")
-                    : tr("The script ended unexpectedly");
-
             final ErrorDialog errorDialog = ErrorDialog.builder()
-                    .withMessage(details)
+                    .withMessage(tr("The script ended unexpectedly"))
                     .withException(e)
                     .build();
 
