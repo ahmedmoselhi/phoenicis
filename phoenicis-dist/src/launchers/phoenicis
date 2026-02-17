@@ -75,12 +75,21 @@ if [ -f "$APP_DIR/compiler.jar" ]; then
     COMPILER_UPGRADE_PATH="$COMPILER_UPGRADE_PATH:$APP_DIR/compiler.jar"
 fi
 
+COMPILER_OPTS=()
+if [ -f "$LIB_DIR/compiler.jar" ] || [ -f "$APP_DIR/compiler.jar" ]; then
+    if "$JAVA_BIN" "${JVM_OPTS[@]}" "--upgrade-module-path=$COMPILER_UPGRADE_PATH" -version >/dev/null 2>&1; then
+        COMPILER_OPTS+=("--upgrade-module-path=$COMPILER_UPGRADE_PATH")
+    else
+        echo "Skipping compiler module upgrade path: incompatible Java/Graal module set detected." >&2
+    fi
+fi
+
 if compgen -G "$APP_DIR/phoenicis-javafx-*.jar" > /dev/null || compgen -G "$LIB_DIR/phoenicis-javafx-*.jar" > /dev/null; then
     exec "$JAVA_BIN" "${JVM_OPTS[@]}" \
         --add-modules=javafx.base,javafx.web,javafx.media,javafx.graphics,javafx.controls \
         --enable-native-access=javafx.graphics,javafx.web \
         --module-path "$MODULE_PATH" \
-        --upgrade-module-path="$COMPILER_UPGRADE_PATH" \
+        "${COMPILER_OPTS[@]}" \
         -cp "$APP_DIR/*:$LIB_DIR/*" \
         org.phoenicis.javafx.JavaFXApplication "$@"
 fi
