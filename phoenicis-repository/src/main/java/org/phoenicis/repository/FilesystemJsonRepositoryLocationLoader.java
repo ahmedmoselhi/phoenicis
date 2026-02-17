@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.List;
 
 public class FilesystemJsonRepositoryLocationLoader implements RepositoryLocationLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(FilesystemJsonRepositoryLocationLoader.class);
+    private static final String LEGACY_SCRIPTS_REPOSITORY_URL = "https://github.com/ahmedmoselhi/scripts";
 
     private final String repositoryListPath;
     private final String defaultGitUrl;
@@ -63,6 +65,7 @@ public class FilesystemJsonRepositoryLocationLoader implements RepositoryLocatio
             try {
                 result = this.objectMapper.readValue(new File(repositoryListPath),
                         TypeFactory.defaultInstance().constructParametricType(List.class, RepositoryLocation.class));
+                result = migrateLegacyRepositoryLocations(result);
             } catch (IOException e) {
                 LOGGER.error("Couldn't load repository location list", e);
             }
@@ -80,5 +83,35 @@ public class FilesystemJsonRepositoryLocationLoader implements RepositoryLocatio
         } catch (IOException e) {
             LOGGER.error("Couldn't save repository location list", e);
         }
+    }
+
+    private List<RepositoryLocation<? extends Repository>> migrateLegacyRepositoryLocations(
+            List<RepositoryLocation<? extends Repository>> repositoryLocations) {
+        final List<RepositoryLocation<? extends Repository>> migratedRepositoryLocations = new ArrayList<>();
+        boolean changed = false;
+
+        for (RepositoryLocation<? extends Repository> location : repositoryLocations) {
+            if (location instanceof GitRepositoryLocation
+                    && ((GitRepositoryLocation) location).getGitRepositoryUri().toString()
+                            .equals(LEGACY_SCRIPTS_REPOSITORY_URL)) {
+                try {
+                    migratedRepositoryLocations.add(new GitRepositoryLocation.Builder((GitRepositoryLocation) location)
+                            .withGitRepositoryUri(new URI(defaultGitUrl))
+                            .build());
+                    changed = true;
+                } catch (URISyntaxException e) {
+                    LOGGER.error("Couldn't migrate legacy scripts repository URL", e);
+                    migratedRepositoryLocations.add(location);
+                }
+            } else {
+                migratedRepositoryLocations.add(location);
+            }
+        }
+
+        if (changed) {
+            saveRepositories(migratedRepositoryLocations);
+        }
+
+        return migratedRepositoryLocations;
     }
 }
