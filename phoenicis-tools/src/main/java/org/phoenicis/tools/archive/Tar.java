@@ -154,23 +154,25 @@ public class Tar {
     private List<File> uncompress(final InputStream inputStream, CountingInputStream countingInputStream,
             final File outputDir, long finalSize, Consumer<ProgressEntity> stateCallback) {
         final List<File> uncompressedFiles = new LinkedList<>();
+        int extractedEntries = 0;
+        int lastNotifiedPercent = -1;
+
         try (ArchiveInputStream debInputStream = new ArchiveStreamFactory().createArchiveInputStream("tar",
                 inputStream)) {
             TarArchiveEntry entry;
             while ((entry = (TarArchiveEntry) debInputStream.getNextEntry()) != null) {
+                extractedEntries++;
                 final File outputFile = new File(outputDir, entry.getName());
+
                 if (entry.isDirectory()) {
-                    LOGGER.info(
-                            String.format("Attempting to write output directory %s.", outputFile.getAbsolutePath()));
+                    LOGGER.debug("Attempting to write output directory {}.", outputFile.getAbsolutePath());
 
                     if (!outputFile.exists()) {
-                        LOGGER.info(String.format("Attempting to createPrefix output directory %s.",
-                                outputFile.getAbsolutePath()));
+                        LOGGER.debug("Attempting to create output directory {}.", outputFile.getAbsolutePath());
                         Files.createDirectories(outputFile.toPath());
                     }
                 } else {
-                    LOGGER.info(String.format("Creating output file %s (%s).", outputFile.getAbsolutePath(),
-                            entry.getMode()));
+                    LOGGER.debug("Creating output file {} ({}).", outputFile.getAbsolutePath(), entry.getMode());
 
                     if (entry.isSymbolicLink()) {
                         Files.createSymbolicLink(Paths.get(outputFile.getAbsolutePath()),
@@ -183,17 +185,27 @@ public class Tar {
                                     fileUtilities.octToPosixFilePermission(entry.getMode()));
                         }
                     }
-
                 }
+
                 uncompressedFiles.add(outputFile);
 
-                stateCallback
-                        .accept(new ProgressEntity.Builder()
-                                .withPercent(
-                                        (double) countingInputStream.getCount() / (double) finalSize * (double) 100)
-                                .withProgressText("Extracting " + outputFile.getName()).build());
+                final double percent = (double) countingInputStream.getCount() / (double) finalSize * 100d;
+                final int roundedPercent = (int) percent;
+                if (roundedPercent > lastNotifiedPercent || extractedEntries % 500 == 0) {
+                    stateCallback.accept(new ProgressEntity.Builder().withPercent(percent)
+                            .withProgressText("Extracting " + outputFile.getName()).build());
+                    lastNotifiedPercent = roundedPercent;
+                }
 
+                if (extractedEntries % 1000 == 0) {
+                    LOGGER.info("Extracted {} entries from archive...", extractedEntries);
+                }
             }
+
+            stateCallback.accept(new ProgressEntity.Builder().withPercent(100d).withProgressText("Extraction complete")
+                    .build());
+            LOGGER.info("Finished extracting {} entries to {}.", extractedEntries, outputDir.getAbsolutePath());
+
             return uncompressedFiles;
         } catch (IOException | org.apache.commons.compress.archivers.ArchiveException e) {
             throw new ArchiveException("Unable to extract the file", e);
