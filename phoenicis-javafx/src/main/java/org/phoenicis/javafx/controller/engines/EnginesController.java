@@ -317,9 +317,10 @@ public class EnginesController {
                             downloader.get(externalUrl, tempFile.toString(), progress -> {
                                 // no-op: progress already handled by downloader internals
                             });
-                            extractor.uncompress(tempFile.toFile(), targetDirectory.toFile(), progress -> {
-                                // no-op: extraction runs in background thread
-                            });
+                            extractor.uncompressWithoutTracking(tempFile.toFile(), targetDirectory.toFile(),
+                                    progress -> {
+                                        // no-op: extraction runs in background thread
+                                    });
                         } finally {
                             Files.deleteIfExists(tempFile);
                         }

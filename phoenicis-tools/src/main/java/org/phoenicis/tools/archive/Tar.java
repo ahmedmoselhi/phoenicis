@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.zip.GZIPInputStream;
@@ -54,39 +54,63 @@ public class Tar {
     }
 
     List<File> uncompressTarBz2File(File inputFile, File outputDir, Consumer<ProgressEntity> stateCallback) {
+        return uncompressTarBz2File(inputFile, outputDir, stateCallback, true);
+    }
+
+    List<File> uncompressTarBz2File(File inputFile, File outputDir, Consumer<ProgressEntity> stateCallback,
+            boolean trackExtractedFiles) {
         try (CountingInputStream countingInputStream = new CountingInputStream(new FileInputStream(inputFile));
                 InputStream inputStream = new BZip2CompressorInputStream(countingInputStream)) {
             final long finalSize = FileUtils.sizeOf(inputFile);
-            return uncompress(inputStream, countingInputStream, outputDir, finalSize, stateCallback);
+            return uncompress(inputStream, countingInputStream, outputDir, finalSize, stateCallback,
+                    trackExtractedFiles);
         } catch (IOException e) {
             throw new ArchiveException(TAR_ERROR_MESSAGE, e);
         }
     }
 
     List<File> uncompressTarGzFile(File inputFile, File outputDir, Consumer<ProgressEntity> stateCallback) {
+        return uncompressTarGzFile(inputFile, outputDir, stateCallback, true);
+    }
+
+    List<File> uncompressTarGzFile(File inputFile, File outputDir, Consumer<ProgressEntity> stateCallback,
+            boolean trackExtractedFiles) {
         try (CountingInputStream countingInputStream = new CountingInputStream(new FileInputStream(inputFile));
                 InputStream inputStream = new GZIPInputStream(countingInputStream)) {
             final long finalSize = FileUtils.sizeOf(inputFile);
-            return uncompress(inputStream, countingInputStream, outputDir, finalSize, stateCallback);
+            return uncompress(inputStream, countingInputStream, outputDir, finalSize, stateCallback,
+                    trackExtractedFiles);
         } catch (IOException e) {
             throw new ArchiveException(TAR_ERROR_MESSAGE, e);
         }
     }
 
     List<File> uncompressTarXzFile(File inputFile, File outputDir, Consumer<ProgressEntity> stateCallback) {
+        return uncompressTarXzFile(inputFile, outputDir, stateCallback, true);
+    }
+
+    List<File> uncompressTarXzFile(File inputFile, File outputDir, Consumer<ProgressEntity> stateCallback,
+            boolean trackExtractedFiles) {
         try (CountingInputStream countingInputStream = new CountingInputStream(new FileInputStream(inputFile));
                 InputStream inputStream = new XZCompressorInputStream(countingInputStream)) {
             final long finalSize = FileUtils.sizeOf(inputFile);
-            return uncompress(inputStream, countingInputStream, outputDir, finalSize, stateCallback);
+            return uncompress(inputStream, countingInputStream, outputDir, finalSize, stateCallback,
+                    trackExtractedFiles);
         } catch (IOException e) {
             throw new ArchiveException(TAR_ERROR_MESSAGE, e);
         }
     }
 
     List<File> uncompressTarFile(File inputFile, File outputDir, Consumer<ProgressEntity> stateCallback) {
+        return uncompressTarFile(inputFile, outputDir, stateCallback, true);
+    }
+
+    List<File> uncompressTarFile(File inputFile, File outputDir, Consumer<ProgressEntity> stateCallback,
+            boolean trackExtractedFiles) {
         try (CountingInputStream countingInputStream = new CountingInputStream(new FileInputStream(inputFile))) {
             final long finalSize = FileUtils.sizeOf(inputFile);
-            return uncompress(countingInputStream, countingInputStream, outputDir, finalSize, stateCallback);
+            return uncompress(countingInputStream, countingInputStream, outputDir, finalSize, stateCallback,
+                    trackExtractedFiles);
         } catch (IOException e) {
             throw new ArchiveException(TAR_ERROR_MESSAGE, e);
         }
@@ -152,8 +176,9 @@ public class Tar {
      *             if the process fails
      */
     private List<File> uncompress(final InputStream inputStream, CountingInputStream countingInputStream,
-            final File outputDir, long finalSize, Consumer<ProgressEntity> stateCallback) {
-        final List<File> uncompressedFiles = new LinkedList<>();
+            final File outputDir, long finalSize, Consumer<ProgressEntity> stateCallback,
+            boolean trackExtractedFiles) {
+        final List<File> uncompressedFiles = new ArrayList<>();
         int extractedEntries = 0;
         int lastNotifiedPercent = -1;
 
@@ -187,7 +212,9 @@ public class Tar {
                     }
                 }
 
-                uncompressedFiles.add(outputFile);
+                if (trackExtractedFiles) {
+                    uncompressedFiles.add(outputFile);
+                }
 
                 final double percent = (double) countingInputStream.getCount() / (double) finalSize * 100d;
                 final int roundedPercent = (int) percent;
