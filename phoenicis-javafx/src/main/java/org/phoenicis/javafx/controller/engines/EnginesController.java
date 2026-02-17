@@ -20,9 +20,17 @@ package org.phoenicis.javafx.controller.engines;
 
 import com.google.common.collect.ImmutableMap;
 import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import org.phoenicis.engines.Engine;
 import org.phoenicis.engines.EnginesManager;
 import org.phoenicis.engines.dto.EngineCategoryDTO;
+import org.phoenicis.engines.dto.EngineDTO;
 import org.phoenicis.engines.dto.EngineSubCategoryDTO;
 import org.phoenicis.javafx.controller.apps.AppsController;
 import org.phoenicis.javafx.dialogs.SimpleConfirmDialog;
@@ -37,8 +45,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -114,6 +124,8 @@ public class EnginesController {
 
             confirmMessage.showAndCallback();
         });
+
+        this.enginesView.setOnInstallEngineFromUrl(engineDTO -> showInstallFromUrlDialog(engineDTO));
 
         this.enginesView.setOnDeleteEngine(engineDTO -> {
             final SimpleConfirmDialog confirmMessage = SimpleConfirmDialog.builder()
@@ -240,6 +252,95 @@ public class EnginesController {
                         errorDialog.showAndWait();
                     }));
         }
+    }
+
+    private void showInstallFromUrlDialog(EngineDTO engineDTO) {
+        final Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle(tr("Install Wine from URL"));
+        dialog.setHeaderText(tr("Install a Wine build from an external archive URL"));
+        dialog.initOwner(this.enginesView.getContent().getScene().getWindow());
+
+        final ButtonType installButtonType = new ButtonType(tr("Install"), ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(installButtonType, ButtonType.CANCEL);
+
+        final TextField versionField = new TextField();
+        versionField.setPromptText(tr("Version name (e.g. custom-8.0)"));
+
+        final TextField urlField = new TextField();
+        urlField.setPromptText(tr("Archive URL"));
+
+        final GridPane grid = new GridPane();
+        grid.setHgap(8);
+        grid.setVgap(8);
+        grid.add(new Label(tr("Version")), 0, 0);
+        grid.add(versionField, 1, 0);
+        grid.add(new Label(tr("URL")), 0, 1);
+        grid.add(urlField, 1, 1);
+        dialog.getDialogPane().setContent(grid);
+
+        final Node installButton = dialog.getDialogPane().lookupButton(installButtonType);
+        installButton.disableProperty().bind(versionField.textProperty().isEmpty().or(urlField.textProperty().isEmpty()));
+
+        dialog.showAndWait().filter(result -> result == installButtonType).ifPresent(ignored ->
+                installWineFromExternalUrl(engineDTO, versionField.getText().trim(), urlField.getText().trim()));
+    }
+
+    private void installWineFromExternalUrl(EngineDTO engineDTO, String version, String externalUrl) {
+        final SimpleConfirmDialog confirmMessage = SimpleConfirmDialog.builder()
+                .withTitle(tr("Install {0}", version))
+                .withMessage(tr("Are you sure you want to install {0} from {1}?", version, externalUrl))
+                .withOwner(enginesView.getContent().getScene().getWindow())
+                .withResizable(true)
+                .withYesCallback(() -> this.enginesManager.getEngine(engineDTO.getId(), engine -> {
+                    try {
+                        final Path targetDirectory = Path.of(engine.getLocalDirectory(engineDTO.getSubCategory(), version));
+                        Files.createDirectories(targetDirectory);
+
+                        final String archiveName = new File(new URL(externalUrl).getPath()).getName();
+                        final Path tempFile = Files.createTempFile("wine-external-",
+                                archiveName.isEmpty() ? ".tar.gz" : "-" + archiveName);
+
+                        try {
+                            try (var inputStream = new URL(externalUrl).openStream()) {
+                                Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
+                            }
+
+                            final Process process = new ProcessBuilder("tar", "-xf", tempFile.toString(), "-C",
+                                    targetDirectory.toString()).start();
+                            final int exitCode = process.waitFor();
+
+                            if (exitCode != 0) {
+                                throw new IOException("Could not extract archive from URL: " + externalUrl);
+                            }
+                        } finally {
+                            Files.deleteIfExists(tempFile);
+                        }
+
+                        this.versionsCache.remove(engineDTO.getId());
+                        this.forceViewUpdate();
+                    } catch (Exception e) {
+                        Platform.runLater(() -> {
+                            final ErrorDialog errorDialog = ErrorDialog.builder()
+                                    .withMessage(tr("Error"))
+                                    .withException(e)
+                                    .withOwner(this.enginesView.getContent().getScene().getWindow())
+                                    .build();
+
+                            errorDialog.showAndWait();
+                        });
+                    }
+                }, e -> Platform.runLater(() -> {
+                    final ErrorDialog errorDialog = ErrorDialog.builder()
+                            .withMessage(tr("Error"))
+                            .withException(e)
+                            .withOwner(this.enginesView.getContent().getScene().getWindow())
+                            .build();
+
+                    errorDialog.showAndWait();
+                })))
+                .build();
+
+        confirmMessage.showAndCallback();
     }
 
     /**
