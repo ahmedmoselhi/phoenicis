@@ -20,17 +20,9 @@ package org.phoenicis.javafx.controller.engines;
 
 import com.google.common.collect.ImmutableMap;
 import javafx.application.Platform;
-import javafx.scene.Node;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
 import org.phoenicis.engines.Engine;
 import org.phoenicis.engines.EnginesManager;
 import org.phoenicis.engines.dto.EngineCategoryDTO;
-import org.phoenicis.engines.dto.EngineDTO;
 import org.phoenicis.engines.dto.EngineSubCategoryDTO;
 import org.phoenicis.javafx.controller.apps.AppsController;
 import org.phoenicis.javafx.dialogs.SimpleConfirmDialog;
@@ -40,15 +32,11 @@ import org.phoenicis.javafx.views.mainwindow.engines.EnginesView;
 import org.phoenicis.repository.RepositoryManager;
 import org.phoenicis.repository.dto.CategoryDTO;
 import org.phoenicis.repository.dto.RepositoryDTO;
-import org.phoenicis.tools.archive.Extractor;
-import org.phoenicis.tools.http.Downloader;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -62,8 +50,6 @@ public class EnginesController {
     private final EnginesView enginesView;
     private final RepositoryManager repositoryManager;
     private final EnginesManager enginesManager;
-    private final Downloader downloader;
-    private final Extractor extractor;
 
     private ThemeManager themeManager;
     private RepositoryDTO repositoryCache;
@@ -73,15 +59,13 @@ public class EnginesController {
     private boolean firstViewSelection = true;
 
     public EnginesController(EnginesView enginesView, RepositoryManager repositoryManager,
-            EnginesManager enginesManager, ThemeManager themeManager, Downloader downloader, Extractor extractor) {
+            EnginesManager enginesManager, ThemeManager themeManager) {
         super();
 
         this.enginesView = enginesView;
         this.repositoryManager = repositoryManager;
         this.enginesManager = enginesManager;
         this.themeManager = themeManager;
-        this.downloader = downloader;
-        this.extractor = extractor;
 
         this.enginesView.setOnSelectEngineCategory(engineCategoryDTO -> {
             // TODO: better way to get engine ID
@@ -130,8 +114,6 @@ public class EnginesController {
 
             confirmMessage.showAndCallback();
         });
-
-        this.enginesView.setOnInstallEngineFromUrl(engineDTO -> showInstallFromUrlDialog(engineDTO));
 
         this.enginesView.setOnDeleteEngine(engineDTO -> {
             final SimpleConfirmDialog confirmMessage = SimpleConfirmDialog.builder()
@@ -257,123 +239,6 @@ public class EnginesController {
 
                         errorDialog.showAndWait();
                     }));
-        }
-    }
-
-    private void showInstallFromUrlDialog(EngineDTO engineDTO) {
-        final Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle(tr("Install Wine from URL"));
-        dialog.setHeaderText(tr("Install a Wine build from an external archive URL"));
-        dialog.initOwner(this.enginesView.getContent().getScene().getWindow());
-
-        final ButtonType installButtonType = new ButtonType(tr("Install"), ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(installButtonType, ButtonType.CANCEL);
-
-        final TextField versionField = new TextField();
-        versionField.setPromptText(tr("Version name (e.g. custom-8.0)"));
-
-        final TextField urlField = new TextField();
-        urlField.setPromptText(tr("Archive URL"));
-
-        final GridPane grid = new GridPane();
-        grid.setHgap(8);
-        grid.setVgap(8);
-        grid.add(new Label(tr("Version")), 0, 0);
-        grid.add(versionField, 1, 0);
-        grid.add(new Label(tr("URL")), 0, 1);
-        grid.add(urlField, 1, 1);
-        dialog.getDialogPane().setContent(grid);
-
-        final Node installButton = dialog.getDialogPane().lookupButton(installButtonType);
-        installButton.disableProperty().bind(versionField.textProperty().isEmpty().or(urlField.textProperty().isEmpty()));
-
-        dialog.showAndWait().filter(result -> result == installButtonType).ifPresent(ignored ->
-                installWineFromExternalUrl(engineDTO, versionField.getText().trim(), urlField.getText().trim()));
-    }
-
-    private void installWineFromExternalUrl(EngineDTO engineDTO, String version, String externalUrl) {
-        final SimpleConfirmDialog confirmMessage = SimpleConfirmDialog.builder()
-                .withTitle(tr("Install {0}", version))
-                .withMessage(tr("Are you sure you want to install {0} from {1}?", version, externalUrl))
-                .withOwner(enginesView.getContent().getScene().getWindow())
-                .withResizable(true)
-                .withYesCallback(() -> this.enginesManager.getEngine(engineDTO.getId(), engine -> {
-                    try {
-                        if (!"wine".equalsIgnoreCase(engineDTO.getId())) {
-                            throw new IllegalArgumentException(tr("Install from URL is only supported for Wine engines"));
-                        }
-
-                        final Path targetDirectory = Path.of(engine.getLocalDirectory(engineDTO.getSubCategory(), version));
-                        Files.createDirectories(targetDirectory);
-
-                        final String archiveExtension = getArchiveExtension(externalUrl);
-                        final Path tempFile = Files.createTempFile("wine-external-", archiveExtension);
-
-                        try {
-                            downloader.get(externalUrl, tempFile.toString(), progress -> {
-                                // no-op: progress already handled by downloader internals
-                            });
-                            extractor.uncompress(tempFile.toFile(), targetDirectory.toFile(), progress -> {
-                                // no-op: extraction runs in background thread
-                            });
-                        } finally {
-                            Files.deleteIfExists(tempFile);
-                        }
-
-                        this.versionsCache.remove(engineDTO.getId());
-                        this.forceViewUpdate();
-                    } catch (Exception e) {
-                        Platform.runLater(() -> {
-                            final ErrorDialog errorDialog = ErrorDialog.builder()
-                                    .withMessage(tr("Error"))
-                                    .withException(e)
-                                    .withOwner(this.enginesView.getContent().getScene().getWindow())
-                                    .build();
-
-                            errorDialog.showAndWait();
-                        });
-                    }
-                }, e -> Platform.runLater(() -> {
-                    final ErrorDialog errorDialog = ErrorDialog.builder()
-                            .withMessage(tr("Error"))
-                            .withException(e)
-                            .withOwner(this.enginesView.getContent().getScene().getWindow())
-                            .build();
-
-                    errorDialog.showAndWait();
-                })))
-                .build();
-
-        confirmMessage.showAndCallback();
-    }
-
-    private String getArchiveExtension(String externalUrl) {
-        try {
-            final String path = new URL(externalUrl).toURI().getPath();
-            if (path == null || path.isBlank()) {
-                return ".tar.gz";
-            }
-
-            final String lowerPath = path.toLowerCase(Locale.ROOT);
-            if (lowerPath.endsWith(".tar.gz")) {
-                return ".tar.gz";
-            }
-            if (lowerPath.endsWith(".tar.xz")) {
-                return ".tar.xz";
-            }
-            if (lowerPath.endsWith(".tar.bz2")) {
-                return ".tar.bz2";
-            }
-            if (lowerPath.endsWith(".zip")) {
-                return ".zip";
-            }
-            if (lowerPath.endsWith(".tar")) {
-                return ".tar";
-            }
-
-            return ".tar.gz";
-        } catch (IOException | URISyntaxException e) {
-            return ".tar.gz";
         }
     }
 

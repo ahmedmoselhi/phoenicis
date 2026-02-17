@@ -6,7 +6,6 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.StringBinding;
 import javafx.collections.ObservableMap;
 import javafx.scene.control.Button;
-import javafx.scene.control.Tooltip;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -143,16 +142,7 @@ public class EngineInformationPanelSkin extends SkinBase<EngineInformationPanel,
             }
         });
 
-        final Button installFromUrlButton = new Button(tr("Install from URL"));
-        installFromUrlButton.disableProperty().bind(Bindings.createBooleanBinding(() -> {
-            final EngineDTO engineDTO = getControl().getEngineDTO();
-            return engineDTO == null || !"wine".equalsIgnoreCase(engineDTO.getId());
-        }, getControl().engineDTOProperty()));
-        installFromUrlButton.setTooltip(new Tooltip(tr("Install a Wine engine build from an external archive URL")));
-        installFromUrlButton.setOnMouseClicked(evt -> Optional.ofNullable(getControl().getOnEngineInstallFromUrl())
-                .ifPresent(onEngineInstallFromUrl -> onEngineInstallFromUrl.accept(getControl().getEngineDTO())));
-
-        final HBox buttonBox = new HBox(installButton, installFromUrlButton, deleteButton);
+        final HBox buttonBox = new HBox(installButton, deleteButton);
         buttonBox.getStyleClass().add("engineButtons");
 
         return buttonBox;

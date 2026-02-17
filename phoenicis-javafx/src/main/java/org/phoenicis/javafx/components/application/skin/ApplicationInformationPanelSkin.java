@@ -288,7 +288,7 @@ public class ApplicationInformationPanelSkin
                     .map(Throwable::getMessage)
                     .orElse("");
             final String details = message.contains("Could not read any Wine branch")
-                    ? tr("The script could not fetch Wine branch metadata. Please install a Wine version manually from the Engines tab (Install from URL) and retry.")
+                    ? tr("The script could not fetch Wine branch metadata from WineHQ. Please try again later or use a script that pins a specific Wine version.")
                     : tr("The script ended unexpectedly");
 
             final ErrorDialog errorDialog = ErrorDialog.builder()
