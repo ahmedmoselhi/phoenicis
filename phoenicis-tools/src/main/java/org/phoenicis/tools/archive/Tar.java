@@ -62,7 +62,8 @@ public class Tar {
         try (CountingInputStream countingInputStream = new CountingInputStream(new FileInputStream(inputFile));
                 InputStream inputStream = new BZip2CompressorInputStream(countingInputStream)) {
             final long finalSize = FileUtils.sizeOf(inputFile);
-            return uncompress(inputStream, countingInputStream, outputDir, finalSize, stateCallback, trackExtractedFiles);
+            return uncompress(inputStream, countingInputStream, outputDir, finalSize, stateCallback,
+                    trackExtractedFiles);
         } catch (IOException e) {
             throw new ArchiveException(TAR_ERROR_MESSAGE, e);
         }
@@ -77,7 +78,8 @@ public class Tar {
         try (CountingInputStream countingInputStream = new CountingInputStream(new FileInputStream(inputFile));
                 InputStream inputStream = new GZIPInputStream(countingInputStream)) {
             final long finalSize = FileUtils.sizeOf(inputFile);
-            return uncompress(inputStream, countingInputStream, outputDir, finalSize, stateCallback, trackExtractedFiles);
+            return uncompress(inputStream, countingInputStream, outputDir, finalSize, stateCallback,
+                    trackExtractedFiles);
         } catch (IOException e) {
             throw new ArchiveException(TAR_ERROR_MESSAGE, e);
         }
@@ -92,7 +94,8 @@ public class Tar {
         try (CountingInputStream countingInputStream = new CountingInputStream(new FileInputStream(inputFile));
                 InputStream inputStream = new XZCompressorInputStream(countingInputStream)) {
             final long finalSize = FileUtils.sizeOf(inputFile);
-            return uncompress(inputStream, countingInputStream, outputDir, finalSize, stateCallback, trackExtractedFiles);
+            return uncompress(inputStream, countingInputStream, outputDir, finalSize, stateCallback,
+                    trackExtractedFiles);
         } catch (IOException e) {
             throw new ArchiveException(TAR_ERROR_MESSAGE, e);
         }
