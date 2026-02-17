@@ -266,19 +266,26 @@ public class ApplicationInformationPanelSkin
 
         getControl().getScriptInterpreter().createInteractiveSession()
                 .eval(executeBuilder.toString(), result -> {
-                    Value installer = (Value) result;
+                    try {
+                        Value installer = (Value) result;
 
-                    installer.as(Installer.class).go();
-                }, e -> Platform.runLater(() -> {
-                    // no exception if installation is cancelled
-                    if (!(e.getCause() instanceof InterruptedException)) {
-                        final ErrorDialog errorDialog = ErrorDialog.builder()
-                                .withMessage(tr("The script ended unexpectedly"))
-                                .withException(e)
-                                .build();
-
-                        errorDialog.showAndWait();
+                        installer.as(Installer.class).go();
+                    } catch (Throwable throwable) {
+                        Platform.runLater(() -> handleInstallationError(throwable));
                     }
-                }));
+                }, e -> Platform.runLater(() -> handleInstallationError(e)));
+    }
+
+    private void handleInstallationError(Throwable throwable) {
+        // no exception if installation is cancelled
+        if (!(throwable instanceof InterruptedException)
+                && !(throwable.getCause() instanceof InterruptedException)) {
+            final ErrorDialog errorDialog = ErrorDialog.builder()
+                    .withMessage(tr("The script ended unexpectedly"))
+                    .withException(throwable instanceof Exception ? (Exception) throwable : new Exception(throwable))
+                    .build();
+
+            errorDialog.showAndWait();
+        }
     }
 }
