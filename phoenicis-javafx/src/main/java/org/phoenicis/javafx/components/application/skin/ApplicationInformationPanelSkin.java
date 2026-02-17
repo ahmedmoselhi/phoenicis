@@ -27,8 +27,11 @@ import org.phoenicis.repository.dto.ScriptDTO;
 import org.phoenicis.scripts.Installer;
 import org.phoenicis.tools.system.OperatingSystemFetcher;
 import org.phoenicis.entities.OperatingSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.util.Arrays;
 
 import static org.phoenicis.configuration.localisation.Localisation.tr;
 
@@ -37,6 +40,7 @@ import static org.phoenicis.configuration.localisation.Localisation.tr;
  */
 public class ApplicationInformationPanelSkin
         extends SkinBase<ApplicationInformationPanel, ApplicationInformationPanelSkin> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationInformationPanelSkin.class);
     private static final String WINE_SOURCE_URL_PATTERN = "https?://[^\\s]+/wine/source/";
     private static final String PLAYONLINUX_WINE_BINARIES_URL = "http://www.playonlinux.com/wine/binaries/";
     /**
@@ -266,6 +270,8 @@ public class ApplicationInformationPanelSkin
         executeBuilder.append(sanitizeScript(script.getScript()));
         executeBuilder.append("\n");
 
+        logWineRelatedScriptLines(executeBuilder.toString(), script.getScriptName());
+
         getControl().getScriptInterpreter().createInteractiveSession()
                 .eval(executeBuilder.toString(), result -> {
                     Value installer = (Value) result;
@@ -276,6 +282,23 @@ public class ApplicationInformationPanelSkin
 
     private String sanitizeScript(String source) {
         return source.replaceAll(WINE_SOURCE_URL_PATTERN, PLAYONLINUX_WINE_BINARIES_URL);
+    }
+
+    private void logWineRelatedScriptLines(String scriptToExecute, String scriptName) {
+        final String[] wineRelatedLines = Arrays.stream(scriptToExecute.split("\\R"))
+                .map(String::trim)
+                .filter(line -> !line.isEmpty())
+                .filter(line -> line.toLowerCase().contains("wine"))
+                .toArray(String[]::new);
+
+        if (wineRelatedLines.length == 0) {
+            LOGGER.info("Script '{}' has no wine-related lines after sanitization", scriptName);
+            return;
+        }
+
+        LOGGER.info("Wine-related lines for script '{}' after sanitization:\n{}",
+                scriptName,
+                String.join("\n", wineRelatedLines));
     }
 
     private void handleInstallationError(Exception exception) {
