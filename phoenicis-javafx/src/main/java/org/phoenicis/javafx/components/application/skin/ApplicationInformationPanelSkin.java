@@ -39,6 +39,8 @@ import static org.phoenicis.configuration.localisation.Localisation.tr;
  */
 public class ApplicationInformationPanelSkin
         extends SkinBase<ApplicationInformationPanel, ApplicationInformationPanelSkin> {
+    private static final String WINEHQ_SOURCE_URL = "https://dl.winehq.org/wine/source/";
+
     /**
      * The preferred height for the application miniature images
      */
@@ -272,14 +274,18 @@ public class ApplicationInformationPanelSkin
 
                     try {
                         installer.as(Installer.class).go();
-                    } catch (Throwable e) {
+                    } catch (RuntimeException e) {
                         showScriptError(e);
                     }
                 }, this::showScriptError);
     }
 
     private String disableWineSourceBranchFetch(String scriptContent) {
-        return scriptContent.replace("https://dl.winehq.org/wine/source/", "");
+        if (scriptContent == null) {
+            return "";
+        }
+
+        return scriptContent.replace(WINEHQ_SOURCE_URL, "");
     }
 
     private void showScriptError(Throwable e) {
