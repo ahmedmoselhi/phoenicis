@@ -269,16 +269,19 @@ public class ApplicationInformationPanelSkin
                     Value installer = (Value) result;
 
                     installer.as(Installer.class).go();
-                }, e -> Platform.runLater(() -> {
-                    // no exception if installation is cancelled
-                    if (!(e.getCause() instanceof InterruptedException)) {
-                        final ErrorDialog errorDialog = ErrorDialog.builder()
-                                .withMessage(tr("The script ended unexpectedly"))
-                                .withException(e)
-                                .build();
+                }, e -> Platform.runLater(() -> handleInstallationError(e)));
+    }
 
-                        errorDialog.showAndWait();
-                    }
-                }));
+    private void handleInstallationError(Exception exception) {
+        // no exception if installation is cancelled
+        if (!(exception instanceof InterruptedException)
+                && !(exception.getCause() instanceof InterruptedException)) {
+            final ErrorDialog errorDialog = ErrorDialog.builder()
+                    .withMessage(tr("The script ended unexpectedly"))
+                    .withException(exception)
+                    .build();
+
+            errorDialog.showAndWait();
+        }
     }
 }
