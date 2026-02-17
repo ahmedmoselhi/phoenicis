@@ -263,7 +263,7 @@ public class ApplicationInformationPanelSkin
         executeBuilder.append(String.format("APPLICATION_ID=\"%s\";\n", script.getApplicationId()));
         executeBuilder.append(String.format("SCRIPT_ID=\"%s\";\n", script.getId()));
 
-        executeBuilder.append(script.getScript());
+        executeBuilder.append(disableWineSourceBranchFetch(script.getScript()));
         executeBuilder.append("\n");
 
         getControl().getScriptInterpreter().createInteractiveSession()
@@ -278,6 +278,10 @@ public class ApplicationInformationPanelSkin
                 }, this::showScriptError);
     }
 
+    private String disableWineSourceBranchFetch(String scriptContent) {
+        return scriptContent.replace("https://dl.winehq.org/wine/source/", "");
+    }
+
     private void showScriptError(Throwable e) {
         Platform.runLater(() -> {
             if (e != null && e.getCause() instanceof InterruptedException) {
@@ -288,7 +292,7 @@ public class ApplicationInformationPanelSkin
                     .map(Throwable::getMessage)
                     .orElse("");
             final String details = message.contains("Could not read any Wine branch")
-                    ? tr("The script could not fetch Wine branch metadata from WineHQ. Please try again later or use a script that pins a specific Wine version.")
+                    ? tr("The script could not fetch Wine branch metadata. Please install a Wine version manually from the Engines tab (Install from URL) and retry.")
                     : tr("The script ended unexpectedly");
 
             final ErrorDialog errorDialog = ErrorDialog.builder()
