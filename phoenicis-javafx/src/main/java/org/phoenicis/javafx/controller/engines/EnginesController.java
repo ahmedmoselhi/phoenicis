@@ -40,15 +40,17 @@ import org.phoenicis.javafx.views.mainwindow.engines.EnginesView;
 import org.phoenicis.repository.RepositoryManager;
 import org.phoenicis.repository.dto.CategoryDTO;
 import org.phoenicis.repository.dto.RepositoryDTO;
+import org.phoenicis.tools.archive.Extractor;
+import org.phoenicis.tools.http.Downloader;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -60,6 +62,8 @@ public class EnginesController {
     private final EnginesView enginesView;
     private final RepositoryManager repositoryManager;
     private final EnginesManager enginesManager;
+    private final Downloader downloader;
+    private final Extractor extractor;
 
     private ThemeManager themeManager;
     private RepositoryDTO repositoryCache;
@@ -69,13 +73,15 @@ public class EnginesController {
     private boolean firstViewSelection = true;
 
     public EnginesController(EnginesView enginesView, RepositoryManager repositoryManager,
-            EnginesManager enginesManager, ThemeManager themeManager) {
+            EnginesManager enginesManager, ThemeManager themeManager, Downloader downloader, Extractor extractor) {
         super();
 
         this.enginesView = enginesView;
         this.repositoryManager = repositoryManager;
         this.enginesManager = enginesManager;
         this.themeManager = themeManager;
+        this.downloader = downloader;
+        this.extractor = extractor;
 
         this.enginesView.setOnSelectEngineCategory(engineCategoryDTO -> {
             // TODO: better way to get engine ID
@@ -293,25 +299,23 @@ public class EnginesController {
                 .withResizable(true)
                 .withYesCallback(() -> this.enginesManager.getEngine(engineDTO.getId(), engine -> {
                     try {
+                        if (!"wine".equalsIgnoreCase(engineDTO.getId())) {
+                            throw new IllegalArgumentException(tr("Install from URL is only supported for Wine engines"));
+                        }
+
                         final Path targetDirectory = Path.of(engine.getLocalDirectory(engineDTO.getSubCategory(), version));
                         Files.createDirectories(targetDirectory);
 
-                        final String archiveName = new File(new URL(externalUrl).getPath()).getName();
-                        final Path tempFile = Files.createTempFile("wine-external-",
-                                archiveName.isEmpty() ? ".tar.gz" : "-" + archiveName);
+                        final String archiveExtension = getArchiveExtension(externalUrl);
+                        final Path tempFile = Files.createTempFile("wine-external-", archiveExtension);
 
                         try {
-                            try (var inputStream = new URL(externalUrl).openStream()) {
-                                Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
-                            }
-
-                            final Process process = new ProcessBuilder("tar", "-xf", tempFile.toString(), "-C",
-                                    targetDirectory.toString()).start();
-                            final int exitCode = process.waitFor();
-
-                            if (exitCode != 0) {
-                                throw new IOException("Could not extract archive from URL: " + externalUrl);
-                            }
+                            downloader.get(externalUrl, tempFile.toString(), progress -> {
+                                // no-op: progress already handled by downloader internals
+                            });
+                            extractor.uncompress(tempFile.toFile(), targetDirectory.toFile(), progress -> {
+                                // no-op: extraction runs in background thread
+                            });
                         } finally {
                             Files.deleteIfExists(tempFile);
                         }
@@ -341,6 +345,36 @@ public class EnginesController {
                 .build();
 
         confirmMessage.showAndCallback();
+    }
+
+    private String getArchiveExtension(String externalUrl) {
+        try {
+            final String path = new URL(externalUrl).toURI().getPath();
+            if (path == null || path.isBlank()) {
+                return ".tar.gz";
+            }
+
+            final String lowerPath = path.toLowerCase(Locale.ROOT);
+            if (lowerPath.endsWith(".tar.gz")) {
+                return ".tar.gz";
+            }
+            if (lowerPath.endsWith(".tar.xz")) {
+                return ".tar.xz";
+            }
+            if (lowerPath.endsWith(".tar.bz2")) {
+                return ".tar.bz2";
+            }
+            if (lowerPath.endsWith(".zip")) {
+                return ".zip";
+            }
+            if (lowerPath.endsWith(".tar")) {
+                return ".tar";
+            }
+
+            return ".tar.gz";
+        } catch (IOException | URISyntaxException e) {
+            return ".tar.gz";
+        }
     }
 
     /**
