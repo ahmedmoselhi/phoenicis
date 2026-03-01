@@ -48,15 +48,16 @@
         <project.settings>${project.root}/settings</project.settings>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.bouncycastle.version>1.46</org.bouncycastle.version>
-        <slf4j.version>2.0.16</slf4j.version>
-        <surefire.version>3.5.1</surefire.version>
+
+        <slf4j.version>2.0.17</slf4j.version>
+        <surefire.version>3.5.5</surefire.version>
         <logback.version>1.5.32</logback.version>
         <junit.version>4.13.2</junit.version>
-        <mockito.version>5.15.2</mockito.version>
+        <mockito.version>5.22.0</mockito.version>
         <spring.version>5.3.23</spring.version>
-        <formatter-maven-plugin.version>2.23.0</formatter-maven-plugin.version>
-        <graalvm.version>24.2.2</graalvm.version>
-        <buildnumber.version>3.2.1</buildnumber.version>
+        <formatter-maven-plugin.version>2.29.0</formatter-maven-plugin.version>
+        <graalvm.version>25.0.2</graalvm.version>
+        <buildnumber.version>3.3.0</buildnumber.version>
         <jacoco.version>0.8.14</jacoco.version>
     </properties>
     <dependencyManagement>
@@ -76,7 +77,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.18.2</version>
+                <version>2.21.1</version>
             </dependency>
             <dependency>
                 <groupId>com.googlecode.gettext-commons</groupId>
@@ -229,7 +230,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <version>3.15.0</version>
                 <configuration>
                     <release>11</release>
                 </configuration>

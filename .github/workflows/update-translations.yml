@@ -9,12 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.TRANSLATIONS_UPDATE }}
         
       - name: Set up JDK 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '25'
@@ -34,7 +34,7 @@ jobs:
 
       - name: Commit changes
         if: steps.check-changes.outcome == 'success' && steps.check-changes.conclusion == 'success'
-        uses: EndBug/add-and-commit@v6
+        uses: EndBug/add-and-commit@v9
         with:
           author_name: PhoenicisBot
           author_email: git@phoenicis.org
