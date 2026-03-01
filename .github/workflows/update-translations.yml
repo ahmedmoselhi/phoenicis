@@ -34,7 +34,7 @@ jobs:
 
       - name: Commit changes
         if: steps.check-changes.outcome == 'success' && steps.check-changes.conclusion == 'success'
-        uses: EndBug/add-and-commit@v6
+        uses: EndBug/add-and-commit@v9
         with:
           author_name: PhoenicisBot
           author_email: git@phoenicis.org
