@@ -109,7 +109,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Download Ubuntu artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: Ubuntu
           path: release-artifacts
