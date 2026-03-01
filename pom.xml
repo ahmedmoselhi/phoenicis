@@ -53,8 +53,8 @@
         <logback.version>1.5.16</logback.version>
         <junit.version>4.13.2</junit.version>
         <mockito.version>5.22.0</mockito.version>
-        <spring.version>7.0.5</spring.version>
-        <formatter-maven-plugin.version>2.29.0</formatter-maven-plugin.version>
+        <spring.version>5.3.23</spring.version>
+        <formatter-maven-plugin.version>2.23.0</formatter-maven-plugin.version>
         <graalvm.version>25.0.2</graalvm.version>
         <buildnumber.version>3.3.0</buildnumber.version>
         <jacoco.version>0.8.14</jacoco.version>
