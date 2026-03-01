@@ -70,6 +70,17 @@ if [ -d "$APP_DIR" ]; then
     MODULE_PATH="$MODULE_PATH:$APP_DIR"
 fi
 
+JAVA_FX_MODULE_OPTS=(
+    --add-modules=javafx.base,javafx.web,javafx.media,javafx.graphics,javafx.controls
+    --enable-native-access=javafx.graphics,javafx.web
+    --module-path "$MODULE_PATH"
+)
+
+if ! "$JAVA_BIN" "${JVM_OPTS[@]}" "${JAVA_FX_MODULE_OPTS[@]}" -version >/dev/null 2>&1; then
+    echo "Skipping JavaFX module-path startup: incompatible Java/JavaFX module set detected." >&2
+    JAVA_FX_MODULE_OPTS=()
+fi
+
 COMPILER_UPGRADE_PATH="$LIB_DIR/compiler.jar"
 if [ -f "$APP_DIR/compiler.jar" ]; then
     COMPILER_UPGRADE_PATH="$COMPILER_UPGRADE_PATH:$APP_DIR/compiler.jar"
@@ -86,9 +97,7 @@ fi
 
 if compgen -G "$APP_DIR/phoenicis-javafx-*.jar" > /dev/null || compgen -G "$LIB_DIR/phoenicis-javafx-*.jar" > /dev/null; then
     exec "$JAVA_BIN" "${JVM_OPTS[@]}" \
-        --add-modules=javafx.base,javafx.web,javafx.media,javafx.graphics,javafx.controls \
-        --enable-native-access=javafx.graphics,javafx.web \
-        --module-path "$MODULE_PATH" \
+        "${JAVA_FX_MODULE_OPTS[@]}" \
         "${COMPILER_OPTS[@]}" \
         -cp "$APP_DIR/*:$LIB_DIR/*" \
         org.phoenicis.javafx.JavaFXApplication "$@"
