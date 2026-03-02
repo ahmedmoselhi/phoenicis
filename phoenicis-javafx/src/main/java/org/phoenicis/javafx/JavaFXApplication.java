@@ -42,8 +42,8 @@ public final class JavaFXApplication {
         final Runnable startup = () -> {
             try {
                 loadFonts();
-                final ConfigurableApplicationContext applicationContext =
-                        new AnnotationConfigApplicationContext(AppConfiguration.class);
+                final ConfigurableApplicationContext applicationContext = new AnnotationConfigApplicationContext(
+                        AppConfiguration.class);
 
                 final MainController mainController = applicationContext.getBean(MainController.class);
                 mainController.show();
