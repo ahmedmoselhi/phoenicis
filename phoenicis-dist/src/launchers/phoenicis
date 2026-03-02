@@ -96,11 +96,33 @@ if [ -f "$LIB_DIR/compiler.jar" ] || [ -f "$APP_DIR/compiler.jar" ]; then
 fi
 
 if compgen -G "$APP_DIR/phoenicis-javafx-*.jar" > /dev/null || compgen -G "$LIB_DIR/phoenicis-javafx-*.jar" > /dev/null; then
-    exec "$JAVA_BIN" "${JVM_OPTS[@]}" \
-        "${JAVA_FX_MODULE_OPTS[@]}" \
-        "${COMPILER_OPTS[@]}" \
-        -cp "$APP_DIR/*:$LIB_DIR/*" \
-        org.phoenicis.javafx.PhoenicisLauncher "$@"
+    launch_args=(
+        "${JVM_OPTS[@]}"
+        "${JAVA_FX_MODULE_OPTS[@]}"
+        "${COMPILER_OPTS[@]}"
+        -cp "$APP_DIR/*:$LIB_DIR/*"
+        org.phoenicis.javafx.PhoenicisLauncher
+        "$@"
+    )
+
+    if "$JAVA_BIN" "${launch_args[@]}"; then
+        exit 0
+    fi
+
+    if [ "${#JAVA_FX_MODULE_OPTS[@]}" -gt 0 ]; then
+        echo "JavaFX modular startup failed, retrying with classpath-only JavaFX fallback." >&2
+
+        fallback_log="$(mktemp)"
+        if "$JAVA_BIN" "${JVM_OPTS[@]}" "${COMPILER_OPTS[@]}" -cp "$APP_DIR/*:$LIB_DIR/*" org.phoenicis.javafx.PhoenicisLauncher "$@" 2>"$fallback_log"; then
+            rm -f "$fallback_log"
+            exit 0
+        fi
+
+        cat "$fallback_log" >&2
+        rm -f "$fallback_log"
+    fi
+
+    exit 1
 fi
 
 echo "Unable to find a runnable Phoenicis launcher or JavaFX application jars in $APP_HOME" >&2
