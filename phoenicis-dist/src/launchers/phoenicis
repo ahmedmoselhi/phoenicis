@@ -100,7 +100,7 @@ if compgen -G "$APP_DIR/phoenicis-javafx-*.jar" > /dev/null || compgen -G "$LIB_
         "${JAVA_FX_MODULE_OPTS[@]}" \
         "${COMPILER_OPTS[@]}" \
         -cp "$APP_DIR/*:$LIB_DIR/*" \
-        org.phoenicis.javafx.JavaFXApplication "$@"
+        org.phoenicis.javafx.PhoenicisLauncher "$@"
 fi
 
 echo "Unable to find a runnable Phoenicis launcher or JavaFX application jars in $APP_HOME" >&2
