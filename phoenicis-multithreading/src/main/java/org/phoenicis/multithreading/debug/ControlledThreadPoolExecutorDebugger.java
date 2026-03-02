@@ -5,7 +5,7 @@ import org.phoenicis.configuration.security.Safe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import java.util.concurrent.ExecutorService;
 
 /**
