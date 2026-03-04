@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+
 public class MappedList<S, T> extends ObservableListBase<S> {
     private final ObservableList<T> source;
     private final Function<T, S> mapper;
