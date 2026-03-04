@@ -11,18 +11,18 @@ import java.util.List;
 import java.util.Map;
 
 public class ConcatenatedList<T> extends ObservableListBase<T> {
-    private final ObservableList<? extends ObservableList<? extends T>> sources;
+    private final ObservableList<? extends List<? extends T>> sources;
     private final Map<ObservableList<? extends T>, ListChangeListener<T>> listeners;
     private final List<T> backingList;
 
-    private ConcatenatedList(ObservableList<? extends ObservableList<? extends T>> sources) {
+    private ConcatenatedList(ObservableList<? extends List<? extends T>> sources) {
         this.sources = sources;
         this.listeners = new IdentityHashMap<>();
         this.backingList = new ArrayList<>();
 
         bindSources();
 
-        this.sources.addListener((ListChangeListener<ObservableList<? extends T>>) change -> {
+        this.sources.addListener((ListChangeListener<List<? extends T>>) change -> {
             bindSources();
             refresh();
         });
@@ -30,7 +30,7 @@ public class ConcatenatedList<T> extends ObservableListBase<T> {
         refresh();
     }
 
-    public static <T> ConcatenatedList<T> create(ObservableList<? extends ObservableList<? extends T>> sources) {
+    public static <T> ConcatenatedList<T> create(ObservableList<? extends List<? extends T>> sources) {
         return new ConcatenatedList<>(sources);
     }
 
@@ -54,10 +54,13 @@ public class ConcatenatedList<T> extends ObservableListBase<T> {
         listeners.forEach(ObservableList::removeListener);
         listeners.clear();
 
-        for (ObservableList<? extends T> source : sources) {
-            final ListChangeListener<T> listener = change -> refresh();
-            ((ObservableList<T>) source).addListener(listener);
-            listeners.put(source, listener);
+        for (List<? extends T> source : sources) {
+            if (source instanceof ObservableList) {
+                final ObservableList<? extends T> observableSource = (ObservableList<? extends T>) source;
+                final ListChangeListener<T> listener = change -> refresh();
+                ((ObservableList<T>) observableSource).addListener(listener);
+                listeners.put(observableSource, listener);
+            }
         }
     }
 
@@ -65,7 +68,7 @@ public class ConcatenatedList<T> extends ObservableListBase<T> {
         final List<T> oldValues = new ArrayList<>(backingList);
 
         backingList.clear();
-        for (ObservableList<? extends T> source : sources) {
+        for (List<? extends T> source : sources) {
             backingList.addAll(source);
         }
 
