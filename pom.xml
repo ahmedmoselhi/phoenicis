@@ -53,11 +53,12 @@
         <logback.version>1.5.16</logback.version>
         <junit.version>4.13.2</junit.version>
         <mockito.version>5.22.0</mockito.version>
-        <spring.version>5.3.23</spring.version>
+        <spring.version>5.3.39</spring.version>
         <formatter-maven-plugin.version>2.29.0</formatter-maven-plugin.version>
         <graalvm.version>25.0.2</graalvm.version>
         <buildnumber.version>3.3.0</buildnumber.version>
         <jacoco.version>0.8.14</jacoco.version>
+        <openjfx.version>25.0.2</openjfx.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -82,6 +83,31 @@
                 <groupId>com.googlecode.gettext-commons</groupId>
                 <artifactId>gettext-commons</artifactId>
                 <version>0.9.8</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-base</artifactId>
+                <version>${openjfx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-graphics</artifactId>
+                <version>${openjfx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-controls</artifactId>
+                <version>${openjfx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-web</artifactId>
+                <version>${openjfx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-media</artifactId>
+                <version>${openjfx.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -231,7 +257,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.15.0</version>
                 <configuration>
-                    <release>11</release>
+                    <release>21</release>
                 </configuration>
             </plugin>
             <plugin>
