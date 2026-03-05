@@ -7,6 +7,9 @@ updates:
       time: "07:00"
     open-pull-requests-limit: 10
     ignore:
+      # ignore commons-beanutils security alert updates because this project
+      # does not declare the dependency directly in pom manifests
+      - dependency-name: "commons-beanutils:commons-beanutils"
       # ignore all GraalVM updates (stick to 21.1.x)
       - dependency-name: "org.graalvm.sdk:graal-sdk"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
