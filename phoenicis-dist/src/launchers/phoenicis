@@ -49,11 +49,16 @@ done
 
 JAVA_BIN="${JAVA_BIN:-java}"
 
-JVM_OPTS=()
+JVM_OPTS=("-Dpolyglot.engine.WarnInterpreterOnly=false")
 if "$JAVA_BIN" -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI -version >/dev/null 2>&1; then
     JVM_OPTS+=("-XX:+UnlockExperimentalVMOptions" "-XX:+EnableJVMCI")
+fi
+
+NATIVE_ACCESS_OPTS=()
+if "$JAVA_BIN" "${JVM_OPTS[@]}" --enable-native-access=org.graalvm.truffle --enable-native-access=javafx.graphics,javafx.web -version >/dev/null 2>&1; then
+    NATIVE_ACCESS_OPTS+=("--enable-native-access=org.graalvm.truffle" "--enable-native-access=javafx.graphics,javafx.web")
 else
-    JVM_OPTS+=("-Dpolyglot.engine.WarnInterpreterOnly=false")
+    echo "Skipping native-access flags: JVM does not support --enable-native-access." >&2
 fi
 
 LIB_DIR="$APP_HOME/lib"
@@ -72,7 +77,6 @@ fi
 
 JAVA_FX_MODULE_OPTS=(
     --add-modules=javafx.base,javafx.web,javafx.media,javafx.graphics,javafx.controls
-    --enable-native-access=javafx.graphics,javafx.web
     --module-path "$MODULE_PATH"
 )
 
@@ -98,6 +102,7 @@ fi
 if compgen -G "$APP_DIR/phoenicis-javafx-*.jar" > /dev/null || compgen -G "$LIB_DIR/phoenicis-javafx-*.jar" > /dev/null; then
     launch_args=(
         "${JVM_OPTS[@]}"
+        "${NATIVE_ACCESS_OPTS[@]}"
         "${JAVA_FX_MODULE_OPTS[@]}"
         "${COMPILER_OPTS[@]}"
         -cp "$APP_DIR/*:$LIB_DIR/*"
@@ -113,7 +118,7 @@ if compgen -G "$APP_DIR/phoenicis-javafx-*.jar" > /dev/null || compgen -G "$LIB_
         echo "JavaFX modular startup failed, retrying with classpath-only JavaFX fallback." >&2
 
         fallback_log="$(mktemp)"
-        if "$JAVA_BIN" "${JVM_OPTS[@]}" "${COMPILER_OPTS[@]}" -cp "$APP_DIR/*:$LIB_DIR/*" org.phoenicis.javafx.PhoenicisLauncher "$@" 2>"$fallback_log"; then
+        if "$JAVA_BIN" "${JVM_OPTS[@]}" "${NATIVE_ACCESS_OPTS[@]}" "${COMPILER_OPTS[@]}" -cp "$APP_DIR/*:$LIB_DIR/*" org.phoenicis.javafx.PhoenicisLauncher "$@" 2>"$fallback_log"; then
             rm -f "$fallback_log"
             exit 0
         fi
