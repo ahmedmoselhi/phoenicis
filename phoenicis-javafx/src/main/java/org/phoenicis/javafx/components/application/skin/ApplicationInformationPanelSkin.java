@@ -37,6 +37,8 @@ import static org.phoenicis.configuration.localisation.Localisation.tr;
  */
 public class ApplicationInformationPanelSkin
         extends SkinBase<ApplicationInformationPanel, ApplicationInformationPanelSkin> {
+    private static final String WINE_SOURCE_URL_PATTERN = "https?://[^\\s]+/wine/source/";
+    private static final String PLAYONLINUX_WINE_BINARIES_URL = "http://www.playonlinux.com/wine/binaries/";
     /**
      * The preferred height for the application miniature images
      */
@@ -261,7 +263,7 @@ public class ApplicationInformationPanelSkin
         executeBuilder.append(String.format("APPLICATION_ID=\"%s\";\n", script.getApplicationId()));
         executeBuilder.append(String.format("SCRIPT_ID=\"%s\";\n", script.getId()));
 
-        executeBuilder.append(script.getScript());
+        executeBuilder.append(sanitizeScript(script.getScript()));
         executeBuilder.append("\n");
 
         getControl().getScriptInterpreter().createInteractiveSession()
@@ -269,16 +271,23 @@ public class ApplicationInformationPanelSkin
                     Value installer = (Value) result;
 
                     installer.as(Installer.class).go();
-                }, e -> Platform.runLater(() -> {
-                    // no exception if installation is cancelled
-                    if (!(e.getCause() instanceof InterruptedException)) {
-                        final ErrorDialog errorDialog = ErrorDialog.builder()
-                                .withMessage(tr("The script ended unexpectedly"))
-                                .withException(e)
-                                .build();
+                }, e -> Platform.runLater(() -> handleInstallationError(e)));
+    }
 
-                        errorDialog.showAndWait();
-                    }
-                }));
+    private String sanitizeScript(String source) {
+        return source.replaceAll(WINE_SOURCE_URL_PATTERN, PLAYONLINUX_WINE_BINARIES_URL);
+    }
+
+    private void handleInstallationError(Exception exception) {
+        // no exception if installation is cancelled
+        if (!(exception instanceof InterruptedException)
+                && !(exception.getCause() instanceof InterruptedException)) {
+            final ErrorDialog errorDialog = ErrorDialog.builder()
+                    .withMessage(tr("The script ended unexpectedly"))
+                    .withException(exception)
+                    .build();
+
+            errorDialog.showAndWait();
+        }
     }
 }

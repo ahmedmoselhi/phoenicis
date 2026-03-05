@@ -74,6 +74,7 @@ public class EnginesView extends MainWindowView<EngineSidebar> {
 
     private Consumer<EngineDTO> setOnInstallEngine;
     private Consumer<EngineDTO> setOnDeleteEngine;
+    private Consumer<EngineDTO> setOnInstallEngineFromUrl;
     private Consumer<EngineCategoryDTO> onSelectEngineCategory;
 
     private String enginesPath;
@@ -143,6 +144,15 @@ public class EnginesView extends MainWindowView<EngineSidebar> {
      */
     public void setOnDeleteEngine(Consumer<EngineDTO> onDeleteEngine) {
         this.setOnDeleteEngine = onDeleteEngine;
+    }
+
+    /**
+     * sets the consumer which shall be executed if an engine is installed from an external URL
+     *
+     * @param onInstallEngineFromUrl
+     */
+    public void setOnInstallEngineFromUrl(Consumer<EngineDTO> onInstallEngineFromUrl) {
+        this.setOnInstallEngineFromUrl = onInstallEngineFromUrl;
     }
 
     private TabPane createEngineVersion() {
@@ -259,6 +269,7 @@ public class EnginesView extends MainWindowView<EngineSidebar> {
         engineInformationPanel.engineProperty().bind(engine);
 
         engineInformationPanel.setOnEngineInstall(this::installEngine);
+        engineInformationPanel.setOnEngineInstallFromUrl(this::installEngineFromUrl);
         engineInformationPanel.setOnEngineDelete(this::deleteEngine);
 
         final DetailsPanel detailsPanel = new DetailsPanel();
@@ -302,6 +313,10 @@ public class EnginesView extends MainWindowView<EngineSidebar> {
      */
     private void deleteEngine(EngineDTO engineDTO) {
         this.setOnDeleteEngine.accept(engineDTO);
+    }
+
+    private void installEngineFromUrl(EngineDTO engineDTO) {
+        this.setOnInstallEngineFromUrl.accept(engineDTO);
     }
 
 }

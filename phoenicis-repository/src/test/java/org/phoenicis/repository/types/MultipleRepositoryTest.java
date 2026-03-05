@@ -23,7 +23,9 @@ import org.junit.Test;
 import org.phoenicis.repository.dto.RepositoryDTO;
 import org.phoenicis.repository.dto.TypeDTO;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -61,5 +63,25 @@ public class MultipleRepositoryTest {
 
         final MultipleRepository multipleRepository = new MultipleRepository(firstSource, secondSource, thirdSource);
         assertEquals(3, multipleRepository.fetchInstallableApplications().getTypes().get(0).getCategories().size());
+    }
+
+    @Test
+    public void testConstructorMakesDefensiveCopyOfRepositoriesList() {
+        final Repository source = () -> new RepositoryDTO.Builder().withTypes(Collections.singletonList(
+                new TypeDTO.Builder()
+                        .withId("Type 1")
+                        .withCategories(Collections.singletonList(
+                                new CategoryDTO.Builder().withId("Category 1").build()))
+                        .build()))
+                .build();
+
+        final List<Repository> repositories = new ArrayList<>();
+        repositories.add(source);
+
+        final MultipleRepository multipleRepository = new MultipleRepository(repositories);
+        repositories.clear();
+
+        assertEquals(1, multipleRepository.size());
+        assertEquals(1, multipleRepository.fetchInstallableApplications().getTypes().get(0).getCategories().size());
     }
 }

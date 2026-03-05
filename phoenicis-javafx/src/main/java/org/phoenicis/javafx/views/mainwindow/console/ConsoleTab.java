@@ -32,6 +32,8 @@ import java.util.function.Consumer;
 import static org.phoenicis.configuration.localisation.Localisation.tr;
 
 public class ConsoleTab extends Tab {
+    private static final int MAX_CONSOLE_ENTRIES = 2_000;
+
     private final CommandHistory commandHistory = new CommandHistory();
     private final TextField command = new TextField();
     private final TextFlow console = new TextFlow();
@@ -125,9 +127,18 @@ public class ConsoleTab extends Tab {
         Platform.runLater(() -> {
             forceScroll = true;
             console.getChildren().add(commandText);
+            trimConsoleHistory();
             console.layout();
             consolePane.vvalueProperty().setValue(1.0);
         });
+    }
+
+    private void trimConsoleHistory() {
+        final int extraEntries = console.getChildren().size() - MAX_CONSOLE_ENTRIES;
+
+        if (extraEntries > 0) {
+            console.getChildren().remove(0, extraEntries);
+        }
     }
 
 }
