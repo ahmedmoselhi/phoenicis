@@ -275,6 +275,10 @@ public class ApplicationInformationPanelSkin
     }
 
     private String sanitizeScript(String source) {
+        if (source == null) {
+            return "";
+        }
+
         return source.replaceAll(WINE_SOURCE_URL_PATTERN, PLAYONLINUX_WINE_BINARIES_URL);
     }
 

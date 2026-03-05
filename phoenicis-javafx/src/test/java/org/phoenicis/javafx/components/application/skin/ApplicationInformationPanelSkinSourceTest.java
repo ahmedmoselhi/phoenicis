@@ -18,4 +18,13 @@ public class ApplicationInformationPanelSkinSourceTest {
 
         assertTrue(content.contains("http://www.playonlinux.com/wine/binaries/"));
     }
+
+    @Test
+    public void testHandlesNullScripts() throws IOException {
+        final Path sourcePath = Path.of(
+                "src/main/java/org/phoenicis/javafx/components/application/skin/ApplicationInformationPanelSkin.java");
+        final String content = Files.readString(sourcePath, StandardCharsets.UTF_8);
+
+        assertTrue(content.contains("if (source == null)"));
+    }
 }
