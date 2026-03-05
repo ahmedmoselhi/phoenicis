@@ -54,7 +54,7 @@
                         <phase>package</phase>
                         <configuration>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <excludeArtifactIds>bcprov-jdk16, bcmail-jdk16, bcpg-jdk16, commons-logging, xml-apis, xmlParserAPIs, xercesImpl, truffle-api, graal-sdk</excludeArtifactIds>
+                            <excludeArtifactIds>bcprov-jdk16, bcmail-jdk16, bcpg-jdk16, xml-apis, xmlParserAPIs, xercesImpl, truffle-api, graal-sdk</excludeArtifactIds>
                         </configuration>
                     </execution>
                     <execution>
