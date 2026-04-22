@@ -59,7 +59,7 @@
         <graalvm.version>25.0.2</graalvm.version>
         <buildnumber.version>3.3.0</buildnumber.version>
         <jacoco.version>0.8.14</jacoco.version>
-        <openjfx.version>25.0.2</openjfx.version>
+        <openjfx.version>26.0.1</openjfx.version>
     </properties>
     <dependencyManagement>
         <dependencies>
