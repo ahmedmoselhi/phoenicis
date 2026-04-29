@@ -47,14 +47,13 @@ public class BackgroundScriptInterpreter implements ScriptInterpreter {
     public InteractiveScriptSession createInteractiveSession() {
         final InteractiveScriptSession interactiveScriptSession = delegated.createInteractiveSession();
 
-        return (evaluation, responseCallback, errorCallback) ->
-            executorService.execute(() -> {
-                try {
-                    interactiveScriptSession.eval(evaluation, responseCallback, errorCallback);
-                } catch (Throwable throwable) {
-                    errorCallback.accept(asException(throwable));
-                }
-            });
+        return (evaluation, responseCallback, errorCallback) -> executorService.execute(() -> {
+            try {
+                interactiveScriptSession.eval(evaluation, responseCallback, errorCallback);
+            } catch (Throwable throwable) {
+                errorCallback.accept(asException(throwable));
+            }
+        });
     }
 
     private Exception asException(Throwable throwable) {
