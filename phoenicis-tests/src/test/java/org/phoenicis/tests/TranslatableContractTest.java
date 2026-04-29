@@ -103,7 +103,7 @@ public class TranslatableContractTest {
     public void testEqualsTrivialCases() throws ReflectiveOperationException, URISyntaxException {
         final Object translatable = newTranslatableInstance(translatableContainer.getClazz());
         assertTrue(translatable.equals(translatable));
-        assertFalse(translatable.equals(null));
+        assertNotEquals(null, translatable);
         assertFalse(translatable.equals(new Object()));
     }
 
@@ -141,7 +141,7 @@ public class TranslatableContractTest {
                 final Object result = method.invoke(builderInstance,
                         createInstanceOfParameter(method.getParameterTypes()[0], DEFAULT_MAX_DEPTH));
 
-                if (result != builderInstance) {
+                if (!result.equals(builderInstance)) {
                     throw new IllegalStateException("*with methods should return the current instance");
                 }
             }

@@ -130,7 +130,7 @@ public class DTOContractTest {
     public void testEqualsTrivialCases() throws ReflectiveOperationException, URISyntaxException {
         final Object dto = newDTOInstance(DTOContainer.getClazz());
         assertTrue(dto.equals(dto));
-        assertFalse(dto.equals(null));
+        assertNotEquals(null, dto);
         assertFalse(dto.equals(new Object()));
     }
 
@@ -189,7 +189,7 @@ public class DTOContractTest {
                 final Object result = method.invoke(builderInstance,
                         createInstanceOfParameter(method.getParameterTypes()[0], DEFAULT_MAX_DEPTH));
 
-                if (result != builderInstance) {
+                if (!result.equals(builderInstance)) {
                     throw new IllegalStateException("*with methods should return the current instance");
                 }
             }
