@@ -28,7 +28,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public final class JavaFXApplication {
-    private final static Logger LOGGER = LoggerFactory.getLogger(JavaFXApplication.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JavaFXApplication.class);
 
     private JavaFXApplication() {
         // utility class

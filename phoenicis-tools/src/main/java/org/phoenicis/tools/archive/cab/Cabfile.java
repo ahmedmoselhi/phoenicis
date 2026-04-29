@@ -22,7 +22,7 @@ import java.io.*;
 
 public class Cabfile {
     private final InputStream archiveStream;
-    private long readBytes = 0;
+    private long readBytes;
 
     public Cabfile(File archiveFile) {
         try {

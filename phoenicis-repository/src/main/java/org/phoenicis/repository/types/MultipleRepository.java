@@ -29,7 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class MultipleRepository extends MergeableRepository {
-    private final static Logger LOGGER = LoggerFactory.getLogger(MultipleRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MultipleRepository.class);
 
     private final List<Repository> repositories;
 

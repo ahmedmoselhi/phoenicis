@@ -120,7 +120,7 @@ public class Zip {
         }
     }
 
-    private static class ZipExtractionResult {
+    private static final class ZipExtractionResult {
         private final long extractedBytes;
 
         private final String fileName;

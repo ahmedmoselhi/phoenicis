@@ -278,10 +278,10 @@
                 <executions>
                     <execution>
                         <id>copy-mockito-agent</id>
-                        <phase>process-test-classes</phase>
                         <goals>
                             <goal>copy</goal>
                         </goals>
+                        <phase>process-test-classes</phase>
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
@@ -303,6 +303,23 @@
                 <configuration>
                     <argLine>@{argLine} -javaagent:${project.build.directory}/mockito-core-agent.jar --add-opens java.base/java.lang=ALL-UNNAMED -Dnet.bytebuddy.experimental=true -XX:+EnableDynamicAgentLoading</argLine>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.openrewrite.maven</groupId>
+                <artifactId>rewrite-maven-plugin</artifactId>
+                <version>6.38.0</version>
+                <configuration>
+                    <activeRecipes>
+                        <recipe>org.openrewrite.java.cleanup.CommonStaticAnalysis</recipe>
+                    </activeRecipes>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.openrewrite.recipe</groupId>
+                        <artifactId>rewrite-static-analysis</artifactId>
+                        <version>LATEST</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

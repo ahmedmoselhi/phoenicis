@@ -18,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.web.WebView;
 import org.graalvm.polyglot.Value;
+import org.phoenicis.entities.OperatingSystem;
 import org.phoenicis.javafx.collections.MappedList;
 import org.phoenicis.javafx.components.application.control.ApplicationInformationPanel;
 import org.phoenicis.javafx.components.common.skin.SkinBase;
@@ -26,7 +27,6 @@ import org.phoenicis.repository.dto.ApplicationDTO;
 import org.phoenicis.repository.dto.ScriptDTO;
 import org.phoenicis.scripts.Installer;
 import org.phoenicis.tools.system.OperatingSystemFetcher;
-import org.phoenicis.entities.OperatingSystem;
 
 import java.net.URI;
 
@@ -258,10 +258,10 @@ public class ApplicationInformationPanelSkin
      */
     private void installScript(ScriptDTO script) {
         final StringBuilder executeBuilder = new StringBuilder();
-        executeBuilder.append(String.format("TYPE_ID=\"%s\";\n", script.getTypeId()));
-        executeBuilder.append(String.format("CATEGORY_ID=\"%s\";\n", script.getCategoryId()));
-        executeBuilder.append(String.format("APPLICATION_ID=\"%s\";\n", script.getApplicationId()));
-        executeBuilder.append(String.format("SCRIPT_ID=\"%s\";\n", script.getId()));
+        executeBuilder.append(String.format("TYPE_ID=\"%s\";%n", script.getTypeId()));
+        executeBuilder.append(String.format("CATEGORY_ID=\"%s\";%n", script.getCategoryId()));
+        executeBuilder.append(String.format("APPLICATION_ID=\"%s\";%n", script.getApplicationId()));
+        executeBuilder.append(String.format("SCRIPT_ID=\"%s\";%n", script.getId()));
 
         executeBuilder.append(sanitizeScript(script.getScript()));
         executeBuilder.append("\n");

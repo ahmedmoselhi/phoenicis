@@ -34,7 +34,7 @@ public class BackgroundRepositoryTest {
     private final ExecutorService mockExecutor = mock(ExecutorService.class);
     private final Repository mockRepository = mock(Repository.class);
     private final BackgroundRepository backgroundRepository = new BackgroundRepository(mockRepository, mockExecutor);
-    private RepositoryDTO mockResults = new RepositoryDTO.Builder().withTypes(Collections.singletonList(
+    private final RepositoryDTO mockResults = new RepositoryDTO.Builder().withTypes(Collections.singletonList(
             new TypeDTO.Builder().withId("Type 1")
                     .withCategories(Arrays.asList(mock(CategoryDTO.class), mock(CategoryDTO.class))).build()))
             .build();

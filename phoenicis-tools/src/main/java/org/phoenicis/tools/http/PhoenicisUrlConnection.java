@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Wrapper around {@link HttpURLConnection class} that follows correctly HTTP redirects
  */
-class PhoenicisUrlConnection {
+final class PhoenicisUrlConnection {
     static final String CONNECT_TIMEOUT_PROPERTY = "phoenicis.http.connectTimeout.ms";
     static final String READ_TIMEOUT_PROPERTY = "phoenicis.http.readTimeout.ms";
     static final int DEFAULT_CONNECT_TIMEOUT_MS = 10000;

@@ -1,11 +1,7 @@
 package org.phoenicis.engines;
 
 import org.junit.Test;
-import org.phoenicis.repository.dto.ApplicationDTO;
-import org.phoenicis.repository.dto.CategoryDTO;
-import org.phoenicis.repository.dto.RepositoryDTO;
-import org.phoenicis.repository.dto.ScriptDTO;
-import org.phoenicis.repository.dto.TypeDTO;
+import org.phoenicis.repository.dto.*;
 import org.phoenicis.scripts.engine.PhoenicisScriptEngineFactory;
 import org.phoenicis.scripts.engine.implementation.PhoenicisScriptEngine;
 import org.phoenicis.scripts.exceptions.IncludeException;
@@ -19,9 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class EngineSettingsManagerTest {
     @Test

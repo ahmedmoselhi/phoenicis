@@ -130,7 +130,7 @@ public class EngineSettingsManager {
     private List<SettingConfig> fetchSettingConfigurations(RepositoryDTO repositoryDTO) {
         // get engine CategoryDTOs
         List<CategoryDTO> categoryDTOs = repositoryDTO.getTypes().stream()
-                .filter(typeDTO -> typeDTO.getId().equals("engines"))
+                .filter(typeDTO -> "engines".equals(typeDTO.getId()))
                 .flatMap(typeDTO -> typeDTO.getCategories().stream())
                 .collect(Collectors.toList());
 
@@ -159,7 +159,7 @@ public class EngineSettingsManager {
                 .collect(Collectors.toList());
     }
 
-    private class EngineInformation {
+    private final class EngineInformation {
         public final String engineId;
 
         public final ApplicationDTO application;

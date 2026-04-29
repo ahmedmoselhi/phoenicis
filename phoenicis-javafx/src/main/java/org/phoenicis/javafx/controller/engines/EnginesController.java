@@ -21,11 +21,7 @@ package org.phoenicis.javafx.controller.engines;
 import com.google.common.collect.ImmutableMap;
 import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import org.phoenicis.engines.Engine;
 import org.phoenicis.engines.EnginesManager;
@@ -33,8 +29,8 @@ import org.phoenicis.engines.dto.EngineCategoryDTO;
 import org.phoenicis.engines.dto.EngineDTO;
 import org.phoenicis.engines.dto.EngineSubCategoryDTO;
 import org.phoenicis.javafx.controller.apps.AppsController;
-import org.phoenicis.javafx.dialogs.SimpleConfirmDialog;
 import org.phoenicis.javafx.dialogs.ErrorDialog;
+import org.phoenicis.javafx.dialogs.SimpleConfirmDialog;
 import org.phoenicis.javafx.themes.ThemeManager;
 import org.phoenicis.javafx.views.mainwindow.engines.EnginesView;
 import org.phoenicis.repository.RepositoryManager;
@@ -65,10 +61,10 @@ public class EnginesController {
     private final Downloader downloader;
     private final Extractor extractor;
 
-    private ThemeManager themeManager;
+    private final ThemeManager themeManager;
     private RepositoryDTO repositoryCache;
     private Map<String, Engine> enginesCache = new HashMap<>();
-    private Map<String, List<EngineSubCategoryDTO>> versionsCache = new HashMap<>();
+    private final Map<String, List<EngineSubCategoryDTO>> versionsCache = new HashMap<>();
 
     private boolean firstViewSelection = true;
 
@@ -131,7 +127,7 @@ public class EnginesController {
             confirmMessage.showAndCallback();
         });
 
-        this.enginesView.setOnInstallEngineFromUrl(engineDTO -> showInstallFromUrlDialog(engineDTO));
+        this.enginesView.setOnInstallEngineFromUrl(this::showInstallFromUrlDialog);
 
         this.enginesView.setOnDeleteEngine(engineDTO -> {
             final SimpleConfirmDialog confirmMessage = SimpleConfirmDialog.builder()
@@ -190,14 +186,13 @@ public class EnginesController {
 
         // fetch all categories consisting of engines that are contained in the repository
         final List<CategoryDTO> categoryDTOS = repositoryDTO.getTypes().stream()
-                .filter(type -> type.getId().equals("engines"))
+                .filter(type -> "engines".equals(type.getId()))
                 .flatMap(type -> type.getCategories().stream())
                 .collect(Collectors.toList());
 
-        Platform.runLater(() -> {
+        Platform.runLater(() ->
             // generate the necessary css for the engine categories
-            setDefaultEngineIcons(categoryDTOS);
-        });
+            setDefaultEngineIcons(categoryDTOS));
 
         // fetch the engine categories objects contained in the engine categories
         final Queue<EngineCategoryDTO> engineCategories = new ArrayDeque<>(
@@ -211,10 +206,9 @@ public class EnginesController {
                             .build())
                     .collect(Collectors.toList());
 
-            Platform.runLater(() -> {
+            Platform.runLater(() ->
                 // update the view
-                enginesView.populate(categories, engines);
-            });
+                enginesView.populate(categories, engines));
         });
     }
 
@@ -239,15 +233,14 @@ public class EnginesController {
 
             enginesManager.fetchAvailableVersions(
                     engineId,
-                    versions -> {
+                    versions ->
                         // recursively process the remaining engine categories
                         fetchEngineSubcategories(queue,
                                 ImmutableMap.<EngineCategoryDTO, List<EngineSubCategoryDTO>> builder()
                                         .putAll(result)
                                         .put(engineCategory, versions)
                                         .build(),
-                                callback);
-                    },
+                                callback),
                     e -> Platform.runLater(() -> {
                         final ErrorDialog errorDialog = ErrorDialog.builder()
                                 .withMessage(tr("Error"))
@@ -398,13 +391,13 @@ public class EnginesController {
         try {
             StringBuilder cssBuilder = new StringBuilder();
             for (CategoryDTO category : categoryDTOS) {
-                cssBuilder.append("#" + category.getName().toLowerCase() + "Button{\n");
+                cssBuilder.append("#").append(category.getName().toLowerCase()).append("Button{\n");
                 URI categoryIcon = category.getIcon();
                 if (categoryIcon == null) {
                     cssBuilder
                             .append("-fx-background-image: url('/org/phoenicis/javafx/views/common/phoenicis.png');\n");
                 } else {
-                    cssBuilder.append("-fx-background-image: url('" + categoryIcon + "');\n");
+                    cssBuilder.append("-fx-background-image: url('").append(categoryIcon).append("');\n");
                 }
                 cssBuilder.append("}\n");
             }

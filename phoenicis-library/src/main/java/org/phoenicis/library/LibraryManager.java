@@ -41,7 +41,7 @@ import static org.phoenicis.configuration.localisation.Localisation.tr;
 
 @Safe
 public class LibraryManager {
-    private final static Logger LOGGER = LoggerFactory.getLogger(LibraryManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LibraryManager.class);
 
     private final String shortcutDirectory;
     private ObjectMapper objectMapper;

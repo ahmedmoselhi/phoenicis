@@ -10,7 +10,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ConcatenatedList<T> extends ObservableListBase<T> {
+public final class ConcatenatedList<T> extends ObservableListBase<T> {
     private final ObservableList<? extends List<? extends T>> sources;
     private final Map<ObservableList<? extends T>, ListChangeListener<T>> listeners;
     private final List<T> backingList;

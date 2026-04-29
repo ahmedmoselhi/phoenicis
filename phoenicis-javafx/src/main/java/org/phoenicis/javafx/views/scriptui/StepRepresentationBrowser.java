@@ -19,8 +19,8 @@
 package org.phoenicis.javafx.views.scriptui;
 
 import javafx.application.Platform;
-import javafx.concurrent.Worker;
 import javafx.beans.value.ChangeListener;
+import javafx.concurrent.Worker;
 import javafx.scene.web.WebView;
 import org.phoenicis.scripts.ui.BrowserControl;
 import org.phoenicis.scripts.ui.Message;

@@ -40,8 +40,8 @@ import org.phoenicis.javafx.components.engine.control.EngineInformationPanel;
 import org.phoenicis.javafx.components.engine.control.EngineSidebar;
 import org.phoenicis.javafx.components.engine.control.EngineSubCategoryPanel;
 import org.phoenicis.javafx.settings.JavaFxSettingsManager;
-import org.phoenicis.javafx.utils.StringBindings;
 import org.phoenicis.javafx.themes.ThemeManager;
+import org.phoenicis.javafx.utils.StringBindings;
 import org.phoenicis.javafx.views.mainwindow.ui.MainWindowView;
 
 import java.util.*;
@@ -70,14 +70,14 @@ public class EnginesView extends MainWindowView<EngineSidebar> {
 
     private final ObjectProperty<Engine> engine;
 
-    private TabPane availableEngines;
+    private final TabPane availableEngines;
 
     private Consumer<EngineDTO> setOnInstallEngine;
     private Consumer<EngineDTO> setOnDeleteEngine;
     private Consumer<EngineDTO> setOnInstallEngineFromUrl;
     private Consumer<EngineCategoryDTO> onSelectEngineCategory;
 
-    private String enginesPath;
+    private final String enginesPath;
 
     /**
      * constructor

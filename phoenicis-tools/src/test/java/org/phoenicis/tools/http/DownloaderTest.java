@@ -18,13 +18,13 @@
 
 package org.phoenicis.tools.http;
 
-import org.phoenicis.tools.files.FileSizeUtilities;
 import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Header;
+import org.phoenicis.tools.files.FileSizeUtilities;
 
 import java.io.File;
 import java.io.FileReader;
@@ -40,7 +40,7 @@ public class DownloaderTest {
     private static URL mockServerURLFile2;
 
     private static ClientAndServer mockServer;
-    private static int MOCKSERVER_PORT = 3343;
+    private static final int MOCKSERVER_PORT = 3343;
 
     @BeforeClass
     public static void setUp() throws MalformedURLException {

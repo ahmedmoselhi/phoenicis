@@ -19,11 +19,12 @@
 package org.phoenicis.multithreading;
 
 import jakarta.annotation.PreDestroy;
+
 import java.util.concurrent.TimeUnit;
 
 public class ControlledThreadPoolExecutorServiceCloser implements AutoCloseable {
     private final ControlledThreadPoolExecutorService[] executorServices;
-    private boolean closeImmediately = false;
+    private boolean closeImmediately;
 
     ControlledThreadPoolExecutorServiceCloser(ControlledThreadPoolExecutorService... executorServices) {
         this.executorServices = executorServices;

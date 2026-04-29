@@ -23,8 +23,8 @@ import org.phoenicis.containers.ContainersConfiguration;
 import org.phoenicis.engines.EnginesConfiguration;
 import org.phoenicis.javafx.controller.ControllerConfiguration;
 import org.phoenicis.javafx.settings.JavaFxSettingsConfiguration;
-import org.phoenicis.javafx.views.ViewsConfiguration;
 import org.phoenicis.javafx.themes.ThemeConfiguration;
+import org.phoenicis.javafx.views.ViewsConfiguration;
 import org.phoenicis.javafx.views.scriptui.JavaFxUiConfiguration;
 import org.phoenicis.library.LibraryConfiguration;
 import org.phoenicis.multithreading.MultithreadingConfiguration;
@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@Import({ PhoenicisGlobalConfiguration.class,
+@Import({PhoenicisGlobalConfiguration.class,
         ControllerConfiguration.class,
         ScriptsConfiguration.class,
         ThemeConfiguration.class,

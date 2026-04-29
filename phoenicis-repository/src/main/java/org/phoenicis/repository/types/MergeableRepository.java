@@ -75,10 +75,8 @@ abstract class MergeableRepository implements Repository {
             }
         }
 
-        RepositoryDTO mergedRepositoryDTO = repositoryDTOBuilder
+        return repositoryDTOBuilder
                 .withTypes(new ArrayList<>(mergedTypes.values())).build();
-
-        return mergedRepositoryDTO;
 
     }
 

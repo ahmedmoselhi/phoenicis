@@ -38,7 +38,7 @@ public class ConsoleTab extends Tab {
     private final TextField command = new TextField();
     private final TextFlow console = new TextFlow();
     private final ScrollPane consolePane;
-    private boolean forceScroll = false;
+    private boolean forceScroll;
     private Consumer<String> onSendCommand = text -> {
     };
 

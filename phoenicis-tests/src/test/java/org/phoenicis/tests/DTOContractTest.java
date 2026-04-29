@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
 public class DTOContractTest {
-    private final static int DEFAULT_MAX_DEPTH = 5;
+    private static final int DEFAULT_MAX_DEPTH = 5;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private DTOContainer<?> DTOContainer;
@@ -73,7 +73,7 @@ public class DTOContractTest {
             final List<Class<?>> parameterTypes = Arrays.stream(constructor.getParameterTypes())
                     .filter(s -> s.getName().contains("Builder")).collect(Collectors.toList());
 
-            if (parameterTypes.size() > 0) {
+            if (!parameterTypes.isEmpty()) {
                 final Annotation[] annotations = parameterTypes.get(0).getAnnotations();
 
                 for (Annotation annotation : annotations) {
@@ -268,7 +268,7 @@ public class DTOContractTest {
      *
      * @param <C> The class the
      */
-    private static class DTOContainer<C> {
+    private static final class DTOContainer<C> {
         private final Class<C> clazz;
 
         private DTOContainer(Class<C> clazz) {
