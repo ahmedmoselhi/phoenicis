@@ -219,7 +219,8 @@ public class ClasspathRepository implements Repository {
                 throw new RepositoryException("Could not load application metadata: " + applicationJsonPath);
             }
 
-            final ApplicationDTO applicationDTO = objectMapper.readValue(applicationJsonInputStream, ApplicationDTO.class);
+            final ApplicationDTO applicationDTO = objectMapper.readValue(applicationJsonInputStream,
+                    ApplicationDTO.class);
 
             ApplicationDTO.Builder applicationDTOBuilder = new ApplicationDTO.Builder(applicationDTO)
                     .withTypeId(typeId)
