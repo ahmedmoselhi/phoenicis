@@ -191,8 +191,8 @@ public class EnginesController {
                 .collect(Collectors.toList());
 
         Platform.runLater(() ->
-            // generate the necessary css for the engine categories
-            setDefaultEngineIcons(categoryDTOS));
+        // generate the necessary css for the engine categories
+        setDefaultEngineIcons(categoryDTOS));
 
         // fetch the engine categories objects contained in the engine categories
         final Queue<EngineCategoryDTO> engineCategories = new ArrayDeque<>(
@@ -207,8 +207,8 @@ public class EnginesController {
                     .collect(Collectors.toList());
 
             Platform.runLater(() ->
-                // update the view
-                enginesView.populate(categories, engines));
+            // update the view
+            enginesView.populate(categories, engines));
         });
     }
 
@@ -234,13 +234,13 @@ public class EnginesController {
             enginesManager.fetchAvailableVersions(
                     engineId,
                     versions ->
-                        // recursively process the remaining engine categories
-                        fetchEngineSubcategories(queue,
-                                ImmutableMap.<EngineCategoryDTO, List<EngineSubCategoryDTO>> builder()
-                                        .putAll(result)
-                                        .put(engineCategory, versions)
-                                        .build(),
-                                callback),
+                    // recursively process the remaining engine categories
+                    fetchEngineSubcategories(queue,
+                            ImmutableMap.<EngineCategoryDTO, List<EngineSubCategoryDTO>> builder()
+                                    .putAll(result)
+                                    .put(engineCategory, versions)
+                                    .build(),
+                            callback),
                     e -> Platform.runLater(() -> {
                         final ErrorDialog errorDialog = ErrorDialog.builder()
                                 .withMessage(tr("Error"))

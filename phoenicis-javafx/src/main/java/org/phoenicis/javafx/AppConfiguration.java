@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@Import({PhoenicisGlobalConfiguration.class,
+@Import({ PhoenicisGlobalConfiguration.class,
         ControllerConfiguration.class,
         ScriptsConfiguration.class,
         ThemeConfiguration.class,

@@ -12,8 +12,8 @@ public class ScriptEngineTypeTest {
     public void shouldSupportConstDeclarationsInEvaluatedScripts() {
         final PhoenicisScriptEngine scriptEngine = ScriptEngineType.GRAAL.createScriptEngine();
 
-        final Value result = (Value) scriptEngine.evalAndReturn("const answer = 42; answer;", exception ->
-            fail(exception.getMessage()));
+        final Value result = (Value) scriptEngine.evalAndReturn("const answer = 42; answer;",
+                exception -> fail(exception.getMessage()));
 
         assertEquals(42, result.asInt());
     }

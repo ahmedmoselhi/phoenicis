@@ -31,9 +31,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@Import({PhoenicisGlobalConfiguration.class, ScriptsConfiguration.class, RepositoryConfiguration.class,
+@Import({ PhoenicisGlobalConfiguration.class, ScriptsConfiguration.class, RepositoryConfiguration.class,
         EnginesConfiguration.class, LibraryConfiguration.class, Win32Configuration.class, ToolsConfiguration.class,
-        MultithreadingConfiguration.class, CliUiConfiguration.class})
+        MultithreadingConfiguration.class, CliUiConfiguration.class })
 class CLIConfiguration {
 
 }
