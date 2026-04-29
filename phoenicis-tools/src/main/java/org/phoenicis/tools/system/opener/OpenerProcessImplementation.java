@@ -21,7 +21,9 @@ package org.phoenicis.tools.system.opener;
 import org.phoenicis.configuration.security.Safe;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Safe
 public class OpenerProcessImplementation implements Opener {
@@ -33,11 +35,21 @@ public class OpenerProcessImplementation implements Opener {
 
     @Override
     public void open(String file) {
-        final ProcessBuilder processBuilder = new ProcessBuilder(Arrays.asList(commandName, file));
+        final String sanitizedPath = sanitizePath(file);
+        final ProcessBuilder processBuilder = new ProcessBuilder(commandName, sanitizedPath);
         try {
             processBuilder.start().waitFor();
         } catch (InterruptedException | IOException e) {
             throw new IllegalStateException(e);
+        }
+    }
+
+    private String sanitizePath(String file) {
+        try {
+            final Path candidate = Paths.get(file).normalize();
+            return candidate.toString();
+        } catch (InvalidPathException e) {
+            throw new IllegalArgumentException("Invalid file path", e);
         }
     }
 

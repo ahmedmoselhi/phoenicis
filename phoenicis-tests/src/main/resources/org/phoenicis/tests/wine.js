@@ -230,7 +230,7 @@ Wine.prototype.run = function (executable, args, captureOutput) {
  */
 Wine.prototype.uninstall = function (application) {
     var list = this.run("uninstaller", ["--list"], true);
-    var appEscaped = application.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+    var appEscaped = application.replace(/[-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
     var re = new RegExp("(.*)\\|\\|\\|.*" + appEscaped);
     var uuid = list.match(re);
     if (uuid) {
@@ -256,7 +256,7 @@ Wine.prototype.create = function () {
  */
 Wine.prototype.programFiles = function () {
     var programFilesName = this.run("cmd", ["/c", "echo", "%ProgramFiles%"], true).trim();
-    if (programFilesName == "%ProgramFiles%") {
+    if (programFilesName === "%ProgramFiles%") {
         return "Program Files";
     } else {
         return org.apache.commons.io.FilenameUtils.getBaseName(programFilesName);
@@ -360,9 +360,9 @@ Wine.prototype._installVersion = function () {
 
         var that = this;
         wineJson.forEach(function (distribution) {
-            if (distribution.name == fullDistributionName) {
+            if (distribution.name === fullDistributionName) {
                 distribution.packages.forEach(function (winePackage) {
-                    if (winePackage.version == version) {
+                    if (winePackage.version === version) {
                         that._installWinePackage(wizard, winePackage, localDirectory);
                         that._installGecko(wizard, winePackage, localDirectory);
                         that._installMono(wizard, winePackage, localDirectory);
@@ -479,7 +479,7 @@ Wine.prototype.regedit = function () {
     };
 
     this.patch = function (patchContent) {
-        if (patchContent.getClass().getCanonicalName() == "byte[]") {
+        if (patchContent.getClass().getCanonicalName() === "byte[]") {
             patchContent = new java.lang.String(patchContent);
         }
         var tmpFile = createTempFile("reg");
@@ -545,7 +545,7 @@ Wine.prototype.setSoundDriver = function (driver) {
 Wine.prototype.managed = function (managed) {
     // get
     if (arguments.length == 0) {
-        return (this.regedit().fetchValue(["HKEY_CURRENT_USER", "Software", "Wine", "X11 Driver", "Managed"]) == "Y");
+        return (this.regedit().fetchValue(["HKEY_CURRENT_USER", "Software", "Wine", "X11 Driver", "Managed"]) === "Y");
     }
 
     // set
@@ -642,10 +642,10 @@ Wine.prototype.windowsVersion = function (version, servicePack) {
 
     if(servicePack) {
         var servicePackNumber = servicePack.replace("sp", "");
-        that._regeditFileContent += "[HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion]";
-        that._regeditFileContent += "\"CSDVersion\"=\"Service Pack "+ servicePackNumber +"\"";
-        that._regeditFileContent += "[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Windows]";
-        that._regeditFileContent += "\"CSDVersion\"=dword:00000"+servicePackNumber+"00";
+        regeditFileContent += "[HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion]\n";
+        regeditFileContent += "\"CSDVersion\"=\"Service Pack " + servicePackNumber + "\"\n";
+        regeditFileContent += "[HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Windows]\n";
+        regeditFileContent += "\"CSDVersion\"=dword:00000" + servicePackNumber + "00\n";
     }
 
     this.regedit().patch(regeditFileContent);
@@ -754,4 +754,3 @@ Wine.prototype.registerFont = function () {
     return new RegisterFont()
         .wine(this)
 };
-
