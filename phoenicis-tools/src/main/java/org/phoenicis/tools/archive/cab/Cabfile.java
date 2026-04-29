@@ -100,8 +100,21 @@ public class Cabfile {
     }
 
     private void skipBytes(long numberToSkip) throws IOException {
-        readBytes += numberToSkip;
-        archiveStream.skip(numberToSkip);
+        long remaining = numberToSkip;
+
+        while (remaining > 0) {
+            final long skipped = archiveStream.skip(remaining);
+            if (skipped <= 0) {
+                if (archiveStream.read() == -1) {
+                    throw new IOException("Unable to skip requested number of bytes");
+                }
+                remaining--;
+                readBytes++;
+            } else {
+                remaining -= skipped;
+                readBytes += skipped;
+            }
+        }
     }
 
     private void jumpTo(long offset) throws IOException {

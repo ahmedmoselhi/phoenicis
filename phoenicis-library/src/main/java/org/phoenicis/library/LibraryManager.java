@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -144,7 +143,7 @@ public class LibraryManager {
             return new ShortcutDTO.Builder()
                     .withId(baseName)
                     .withInfo(shortcutInfoDTO)
-                    .withScript(IOUtils.toString(new FileInputStream(file), "UTF-8"))
+                    .withScript(IOUtils.toString(file.toURI(), "UTF-8"))
                     .withIcon(icon)
                     .withCategoryIcon(categoryIcon)
                     .withMiniature(miniature)
