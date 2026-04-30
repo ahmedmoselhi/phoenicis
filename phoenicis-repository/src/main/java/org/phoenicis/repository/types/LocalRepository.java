@@ -262,7 +262,7 @@ public final class LocalRepository implements Repository {
             if (!resourceFile.isDirectory() && !resourceFile.getName().startsWith(".")) {
                 try {
                     results.add(new ResourceDTO(resourceFile.getName(),
-                            readFileBytes(resourceFile))));
+                            readFileBytes(resourceFile)));
                 } catch (IOException ignored) {
 
                 }
