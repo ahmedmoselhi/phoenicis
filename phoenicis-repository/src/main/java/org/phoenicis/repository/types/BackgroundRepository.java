@@ -1,45 +1,45 @@
 /*
- * Copyright (C) 2015-2017 PÂRIS Quentin[cite: 3]
+ * Copyright (C) 2015-2017 PÂRIS Quentin
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.[cite: 3]
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.[cite: 3]
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.[cite: 3]
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.phoenicis.repository.types;[cite: 3]
+package org.phoenicis.repository.types;
 
-import org.apache.commons.lang.builder.EqualsBuilder;[cite: 3]
-import org.apache.commons.lang.builder.HashCodeBuilder;[cite: 3]
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.phoenicis.repository.dto.CategoryDTO;
-import org.phoenicis.repository.dto.RepositoryDTO;[cite: 3]
-import org.phoenicis.repository.dto.ScriptDTO;[cite: 3]
+import org.phoenicis.repository.dto.RepositoryDTO;
+import org.phoenicis.repository.dto.ScriptDTO;
 
-import java.util.List;[cite: 3]
-import java.util.concurrent.ExecutorService;[cite: 3]
-import java.util.function.Consumer;[cite: 3]
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 
-public class BackgroundRepository implements Repository {[cite: 3]
-    private final Repository delegatedRepository;[cite: 3]
-    private final ExecutorService executorService;[cite: 3]
+public class BackgroundRepository implements Repository {
+    private final Repository delegatedRepository;
+    private final ExecutorService executorService;
 
-    public BackgroundRepository(Repository delegatedRepository, ExecutorService executorService) {[cite: 3]
-        this.delegatedRepository = delegatedRepository;[cite: 3]
-        this.executorService = executorService;[cite: 3]
+    public BackgroundRepository(Repository delegatedRepository, ExecutorService executorService) {
+        this.delegatedRepository = delegatedRepository;
+        this.executorService = executorService;
     }
 
     @Override
-    public RepositoryDTO fetchInstallableApplications() {[cite: 3]
-        throw new UnsupportedOperationException("The background apps manager is asynchronous");[cite: 3]
+    public RepositoryDTO fetchInstallableApplications() {
+        throw new UnsupportedOperationException("The background apps manager is asynchronous");
     }
 
     @Override
@@ -53,13 +53,13 @@ public class BackgroundRepository implements Repository {[cite: 3]
     }
 
     @Override
-    public void onDelete() {[cite: 3]
-        this.delegatedRepository.onDelete();[cite: 3]
+    public void onDelete() {
+        this.delegatedRepository.onDelete();
     }
 
     @Override
-    public void fetchInstallableApplications(Consumer<RepositoryDTO> callback, Consumer<Exception> errorCallback) {[cite: 3]
-        executorService.submit(() -> delegatedRepository.fetchInstallableApplications(callback, errorCallback));[cite: 3]
+    public void fetchInstallableApplications(Consumer<RepositoryDTO> callback, Consumer<Exception> errorCallback) {
+        executorService.submit(() -> delegatedRepository.fetchInstallableApplications(callback, errorCallback));
     }
 
     @Override
@@ -73,37 +73,37 @@ public class BackgroundRepository implements Repository {[cite: 3]
     }
 
     @Override
-    public void getScript(List<String> path, Consumer<ScriptDTO> callback, Consumer<Exception> errorCallback) {[cite: 3]
-        executorService.submit(() -> delegatedRepository.getScript(path, callback, errorCallback));[cite: 3]
+    public void getScript(List<String> path, Consumer<ScriptDTO> callback, Consumer<Exception> errorCallback) {
+        executorService.submit(() -> delegatedRepository.getScript(path, callback, errorCallback));
     }
 
     @Override
-    public boolean equals(Object o) {[cite: 3]
-        if (this == o) {[cite: 3]
-            return true;[cite: 3]
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {[cite: 3]
-            return false;[cite: 3]
+        if (o == null || getClass() != o.getClass()) {
+            return false;
         }
 
-        BackgroundRepository that = (BackgroundRepository) o;[cite: 3]
+        BackgroundRepository that = (BackgroundRepository) o;
 
-        return new EqualsBuilder()[cite: 3]
-                .append(delegatedRepository, that.delegatedRepository)[cite: 3]
-                .isEquals();[cite: 3]
+        return new EqualsBuilder()
+                .append(delegatedRepository, that.delegatedRepository)
+                .isEquals();
     }
 
     @Override
-    public int hashCode() {[cite: 3]
-        return new HashCodeBuilder()[cite: 3]
-                .append(delegatedRepository)[cite: 3]
-                .toHashCode();[cite: 3]
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(delegatedRepository)
+                .toHashCode();
     }
 
-    public static class Factory {[cite: 3]
-        public BackgroundRepository createInstance(Repository delegatedRepository, ExecutorService executorService) {[cite: 3]
-            return new BackgroundRepository(delegatedRepository, executorService);[cite: 3]
+    public static class Factory {
+        public BackgroundRepository createInstance(Repository delegatedRepository, ExecutorService executorService) {
+            return new BackgroundRepository(delegatedRepository, executorService);
         }
     }
 }
