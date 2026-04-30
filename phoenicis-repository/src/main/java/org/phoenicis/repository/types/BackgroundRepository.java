@@ -20,7 +20,6 @@ package org.phoenicis.repository.types;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.phoenicis.repository.dto.CategoryDTO;
 import org.phoenicis.repository.dto.RepositoryDTO;
 import org.phoenicis.repository.dto.ScriptDTO;
 
@@ -43,16 +42,6 @@ public class BackgroundRepository implements Repository {
     }
 
     @Override
-    public List<CategoryDTO> fetchCategories() {
-        throw new UnsupportedOperationException("The background apps manager is asynchronous");
-    }
-
-    @Override
-    public RepositoryDTO fetchInstallableApplications(CategoryDTO category) {
-        throw new UnsupportedOperationException("The background apps manager is asynchronous");
-    }
-
-    @Override
     public void onDelete() {
         this.delegatedRepository.onDelete();
     }
@@ -60,16 +49,6 @@ public class BackgroundRepository implements Repository {
     @Override
     public void fetchInstallableApplications(Consumer<RepositoryDTO> callback, Consumer<Exception> errorCallback) {
         executorService.submit(() -> delegatedRepository.fetchInstallableApplications(callback, errorCallback));
-    }
-
-    @Override
-    public void fetchCategories(Consumer<List<CategoryDTO>> callback, Consumer<Exception> errorCallback) {
-        executorService.submit(() -> delegatedRepository.fetchCategories(callback, errorCallback));
-    }
-
-    @Override
-    public void fetchInstallableApplications(CategoryDTO category, Consumer<RepositoryDTO> callback, Consumer<Exception> errorCallback) {
-        executorService.submit(() -> delegatedRepository.fetchInstallableApplications(category, callback, errorCallback));
     }
 
     @Override
