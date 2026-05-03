@@ -38,7 +38,8 @@ public class BackgroundRepositoryTest {
             new TypeDTO.Builder().withId("Type 1")
                     .withCategories(Arrays.asList(
                             new CategoryDTO.Builder().withTypeId("Type 1").withId("cat1").build(),
-                            new CategoryDTO.Builder().withTypeId("Type 1").withId("cat2").build())).build()))
+                            new CategoryDTO.Builder().withTypeId("Type 1").withId("cat2").build()))
+                    .build()))
             .build();
 
     @Test
