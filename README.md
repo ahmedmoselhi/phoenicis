@@ -71,3 +71,4 @@ If your language is not listed, please create an [issue](https://github.com/Phoe
 * Issues or ideas: https://github.com/PhoenicisOrg/phoenicis/issues
 * Forums : http://www.playonlinux.com/en/forums.html
 * Slack : https://join.slack.com/phoenicis-org/shared_invite/MTkzMTMwMjM3MjcxLTE0OTY1MTQzNzktY2IzOTE2NmE3NA
+
