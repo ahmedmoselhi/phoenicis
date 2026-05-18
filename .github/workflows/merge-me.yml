@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Merge me!
-        uses: ridedott/merge-me-action@bdc1160618241c08c6c263e1fad2954773037b9b # v2
+        uses: ridedott/merge-me-action@f2b305b5ce4ac8d262d2e236d772483a295eb862 # v2
         with:
           GITHUB_TOKEN: ${{ secrets.DEPENDABOT_AUTO_MERGE || secrets.GITHUB_TOKEN }}
           ENABLE_GITHUB_API_PREVIEW: true
