@@ -45,14 +45,16 @@ public class DownloaderTest {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        httpServer = HttpServer.create(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 0), 0);
+        InetAddress loopbackAddress = InetAddress.getLoopbackAddress();
+        httpServer = HttpServer.create(new InetSocketAddress(loopbackAddress, 0), 0);
         httpServer.createContext("/test.txt", exchange -> respond(exchange, "Content file to download"));
         httpServer.createContext("/test2.txt", exchange -> respond(exchange, "Content file to download 2"));
         httpServer.start();
 
         int port = httpServer.getAddress().getPort();
-        mockServerURL = new URL("http://127.0.0.1:" + port + "/test.txt");
-        mockServerURLFile2 = new URL("http://127.0.0.1:" + port + "/test2.txt");
+        String loopbackHost = loopbackAddress.getHostAddress();
+        mockServerURL = new URL("http", loopbackHost, port, "/test.txt");
+        mockServerURLFile2 = new URL("http", loopbackHost, port, "/test2.txt");
     }
 
     @AfterClass
