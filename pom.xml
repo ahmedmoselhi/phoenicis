@@ -58,7 +58,7 @@
         <formatter-maven-plugin.version>2.29.0</formatter-maven-plugin.version>
         <graalvm.version>25.0.3</graalvm.version>
         <buildnumber.version>3.3.0</buildnumber.version>
-        <jacoco.version>0.8.14</jacoco.version>
+        <jacoco.version>0.8.15</jacoco.version>
         <openjfx.version>26.0.1</openjfx.version>
     </properties>
     <dependencyManagement>
