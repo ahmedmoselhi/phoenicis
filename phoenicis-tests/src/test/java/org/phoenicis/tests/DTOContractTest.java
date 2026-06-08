@@ -19,10 +19,10 @@
 package org.phoenicis.tests;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -135,7 +135,7 @@ public class DTOContractTest {
     }
 
     @Test
-    public void testSerialize() throws ReflectiveOperationException, JsonProcessingException, URISyntaxException {
+    public void testSerialize() throws ReflectiveOperationException, JacksonException, URISyntaxException {
         final Object dto = newDTOInstance(DTOContainer.getClazz());
         final String json = objectMapper.writeValueAsString(dto);
         assertTrue(json.startsWith("{"));
@@ -147,8 +147,9 @@ public class DTOContractTest {
         final Object dto = newDTOInstance(DTOContainer.getClazz());
         final String json = objectMapper.writeValueAsString(dto);
 
-        final ObjectMapper alternativeObjectMapper = new ObjectMapper();
-        alternativeObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        final ObjectMapper alternativeObjectMapper = new ObjectMapper().rebuild()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .build();
 
         final Object serialized = alternativeObjectMapper.readValue(json, DTOContainer.getClazz());
 

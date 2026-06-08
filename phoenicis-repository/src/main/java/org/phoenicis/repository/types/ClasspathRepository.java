@@ -18,7 +18,8 @@
 
 package org.phoenicis.repository.types;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -113,7 +114,7 @@ public class ClasspathRepository implements Repository {
                 LOGGER.debug(String.format("type.json %s for classpath repository does not exist", jsonTypePath));
                 return new TypeDTO.Builder().build();
             }
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new RepositoryException("Could not build type", e);
         }
     }
@@ -175,7 +176,7 @@ public class ClasspathRepository implements Repository {
                         jsonCategoryPath));
                 return new CategoryDTO.Builder().build();
             }
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new RepositoryException("Could not build category", e);
         }
     }
@@ -240,7 +241,7 @@ public class ClasspathRepository implements Repository {
                             applicationDTOBuilder.getId(), typeFileName, categoryFileName, applicationFileName))
                     .withMiniatures(buildMiniatures(typeFileName, categoryFileName, applicationFileName));
             return applicationDTOBuilder.build();
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new RepositoryException("Could not build application", e);
         }
     }

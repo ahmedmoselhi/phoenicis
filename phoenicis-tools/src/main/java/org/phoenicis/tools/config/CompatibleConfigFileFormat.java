@@ -18,9 +18,10 @@
 
 package org.phoenicis.tools.config;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.exc.JacksonIOException;
+import tools.jackson.core.exc.StreamReadException;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.ObjectMapper;
 import org.phoenicis.configuration.security.Safe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,13 +82,13 @@ public class CompatibleConfigFileFormat implements ConfigFile {
                 }
             }
             return results;
-        } catch (JsonParseException | JsonMappingException e) {
+        } catch (StreamReadException | DatabindException e) {
             LOGGER.debug("The file does not seems to be a JSON format. Trying legacy Phoenicis config file.", e);
             return getLegacyMap();
-        } catch (IOException e) {
+        } catch (JacksonIOException e) {
             LOGGER.debug(String.format(
                     "Couldn't read the config file %s. Will assume that the config file is empty. This can happen e.g. if a new container is just being created.",
-                    configFile.getAbsolutePath()));
+                    configFile.getAbsolutePath()), e);
             return new HashMap<>();
         }
     }

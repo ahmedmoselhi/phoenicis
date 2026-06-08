@@ -1,8 +1,8 @@
 package org.phoenicis.javafx.components.library.skin;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import javafx.beans.Observable;
 import javafx.beans.binding.StringBinding;
 import javafx.collections.FXCollections;
@@ -145,7 +145,7 @@ public class ShortcutEditingPanelSkin extends SkinBase<ShortcutEditingPanel, Sho
 
                 getControl().setShortcut(new ShortcutDTO.Builder(shortcut)
                         .withScript(json).build());
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 LOGGER.error("Creating new shortcut String failed.", e);
             }
         });
@@ -223,7 +223,7 @@ public class ShortcutEditingPanelSkin extends SkinBase<ShortcutEditingPanel, Sho
 
                             getControl().setShortcut(new ShortcutDTO.Builder(shortcut)
                                     .withScript(json).build());
-                        } catch (JsonProcessingException e) {
+                        } catch (JacksonException e) {
                             LOGGER.error("Creating new shortcut String failed.", e);
                         }
                     }

@@ -1,6 +1,6 @@
 package org.phoenicis.javafx.components.library.control;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.phoenicis.javafx.components.common.control.ControlBase;

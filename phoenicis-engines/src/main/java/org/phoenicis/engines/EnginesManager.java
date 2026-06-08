@@ -18,8 +18,9 @@
 
 package org.phoenicis.engines;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import org.graalvm.polyglot.Value;
 import org.phoenicis.configuration.security.Safe;
 import org.phoenicis.engines.dto.EngineCategoryDTO;
@@ -31,7 +32,6 @@ import org.phoenicis.scripts.engine.implementation.PhoenicisScriptEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -131,7 +131,7 @@ public class EnginesManager {
             return objectMapper.readValue(json.toString(), new TypeReference<List<EngineSubCategoryDTO>>() {
                 // Default
             });
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             LOGGER.debug("Unable to deserialize engine json");
             return Collections.emptyList();
         }

@@ -18,8 +18,8 @@
 
 package org.phoenicis.containers.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonPOJOBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import java.net.URI;

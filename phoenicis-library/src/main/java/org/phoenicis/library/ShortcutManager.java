@@ -18,7 +18,7 @@
 
 package org.phoenicis.library;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.graalvm.polyglot.Value;
 import org.phoenicis.configuration.security.Safe;

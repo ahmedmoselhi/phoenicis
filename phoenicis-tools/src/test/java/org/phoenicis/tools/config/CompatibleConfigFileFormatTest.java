@@ -18,7 +18,7 @@
 
 package org.phoenicis.tools.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 

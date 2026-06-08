@@ -18,7 +18,8 @@
 
 package org.phoenicis.repository.types;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -351,7 +352,7 @@ public final class LocalRepository implements Repository {
     private TypeDTO unSerializeType(File jsonFile) {
         try {
             return objectMapper.readValue(jsonFile, TypeDTO.class);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             LOGGER.debug("JSON file not found", e);
             return new TypeDTO.Builder().build();
         }
@@ -360,7 +361,7 @@ public final class LocalRepository implements Repository {
     private CategoryDTO unSerializeCategory(File jsonFile) {
         try {
             return objectMapper.readValue(jsonFile, CategoryDTO.class);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             LOGGER.debug("JSON file not found", e);
             return new CategoryDTO.Builder().build();
         }
@@ -369,7 +370,7 @@ public final class LocalRepository implements Repository {
     private ScriptDTO unSerializeScript(File jsonFile) {
         try {
             return objectMapper.readValue(jsonFile, ScriptDTO.class);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             LOGGER.debug("JSON file not found");
             return new ScriptDTO.Builder().build();
         }
@@ -378,7 +379,7 @@ public final class LocalRepository implements Repository {
     private ApplicationDTO unSerializeApplication(File jsonFile) {
         try {
             return objectMapper.readValue(jsonFile, ApplicationDTO.class);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             LOGGER.debug("JSON file not found", e);
             return new ApplicationDTO.Builder().build();
         }

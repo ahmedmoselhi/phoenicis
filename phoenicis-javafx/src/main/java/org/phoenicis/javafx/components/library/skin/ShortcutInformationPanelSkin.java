@@ -1,6 +1,6 @@
 package org.phoenicis.javafx.components.library.skin;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import tools.jackson.core.type.TypeReference;
 import javafx.beans.Observable;
 import javafx.beans.binding.StringBinding;
 import javafx.collections.FXCollections;

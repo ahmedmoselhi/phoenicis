@@ -1,7 +1,8 @@
 package org.phoenicis.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.type.TypeFactory;
 import com.google.common.collect.ImmutableList;
 import org.phoenicis.repository.location.ClasspathRepositoryLocation;
 import org.phoenicis.repository.location.GitRepositoryLocation;
@@ -11,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -62,8 +62,9 @@ public class FilesystemJsonRepositoryLocationLoader implements RepositoryLocatio
         if (repositoryListFile.exists()) {
             try {
                 result = this.objectMapper.readValue(repositoryListFile,
-                        TypeFactory.defaultInstance().constructParametricType(List.class, RepositoryLocation.class));
-            } catch (IOException e) {
+                        TypeFactory.createDefaultInstance()
+                                .constructParametricType(List.class, RepositoryLocation.class));
+            } catch (JacksonException e) {
                 LOGGER.error("Couldn't load repository location list", e);
             }
         } else {
@@ -77,7 +78,7 @@ public class FilesystemJsonRepositoryLocationLoader implements RepositoryLocatio
     public void saveRepositories(List<RepositoryLocation<? extends Repository>> repositoryLocations) {
         try {
             objectMapper.writeValue(new File(repositoryListPath).getAbsoluteFile(), repositoryLocations);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             LOGGER.error("Couldn't save repository location list", e);
         }
     }

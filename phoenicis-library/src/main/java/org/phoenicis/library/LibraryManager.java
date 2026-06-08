@@ -18,7 +18,8 @@
 
 package org.phoenicis.library;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -160,7 +161,7 @@ public class LibraryManager {
     private ShortcutInfoDTO unSerializeShortcutInfo(File jsonFile) {
         try {
             return this.objectMapper.readValue(jsonFile, ShortcutInfoDTO.class);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             LOGGER.debug("JSON file not found");
             return new ShortcutInfoDTO.Builder().build();
         }
