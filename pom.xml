@@ -57,7 +57,7 @@
         <spring.version>7.0.10</spring.version>
         <formatter-maven-plugin.version>2.29.0</formatter-maven-plugin.version>
         <graalvm.version>25.5.5.0.3</graalvm.version>
-        <buildnumber.version>3.3.1</buildnumber.version>
+        <buildnumber.version>3.4.0</buildnumber.version>
         <jacoco.version>0.8.16</jacoco.version>
         <openjfx.version>27.0.1</openjfx.version>
     </properties>
